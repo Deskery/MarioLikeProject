@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.actors.Enemy;
 import com.mygdx.actors.Ground;
+import com.mygdx.actors.Platform;
 import com.mygdx.actors.Runner;
 import com.mygdx.box2d.EnemyUserData;
 import com.mygdx.enums.EnemyType;
@@ -58,9 +59,10 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         world = WorldUtils.createWorld();
         world.setContactListener(this);
         setUpGround();
+        setUpEnemies();
+        setUpPlatforms();
         setUpRunner();
-        createEnemy(new Vector2(10f, 1.5f), new Vector2(5f, 1.5f), new Vector2(10f, 1.5f));
-        createEnemy(new Vector2(18f, 1.5f), new Vector2(11f, 1.5f), new Vector2(18f, 1.5f));
+
     }
 
     private void setUpGround() {
@@ -71,6 +73,15 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private void setUpRunner() {
         runner = new Runner(WorldUtils.createRunner(world));
         addActor(runner);
+    }
+
+    private void setUpEnemies() {
+        createEnemy(new Vector2(10f, 1.5f), new Vector2(5f, 1.5f), new Vector2(10f, 1.5f));
+        createEnemy(new Vector2(18f, 1.5f), new Vector2(11f, 1.5f), new Vector2(18f, 1.5f));
+    }
+
+    private void setUpPlatforms() {
+        createPlatform(0, 5, 4);
     }
     
     private void setupCamera() {
@@ -119,8 +130,14 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         maxPosition.set(maxPosition.x, enemyType.getY());
 
         Enemy enemy = new Enemy(WorldUtils.createEnemy(world, poppingPosition, minPosition, maxPosition, enemyType));
-//        Enemy enemy = new Enemy(WorldUtils.createEnemy(world));
         addActor(enemy);
+    }
+
+    private void createPlatform(float xMin, float xMax, float y) {
+//        EnemyType enemyType = RandomUtils.getRandomEnemyType();
+
+        Platform platform = new Platform(WorldUtils.createPlatform(world, xMin, xMax, y));
+        addActor(platform);
     }
 
 
