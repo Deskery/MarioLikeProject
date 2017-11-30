@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -21,7 +22,11 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.actors.Enemy;
 import com.mygdx.actors.Ground;
 import com.mygdx.actors.Runner;
+import com.mygdx.box2d.EnemyUserData;
+import com.mygdx.enums.EnemyType;
 import com.mygdx.utils.BodyUtils;
+import com.mygdx.utils.Constants;
+import com.mygdx.utils.RandomUtils;
 import com.mygdx.utils.WorldUtils;
 
 public class GameStage extends Stage implements ContactListener, InputProcessor {
@@ -54,8 +59,8 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         world.setContactListener(this);
         setUpGround();
         setUpRunner();
-        createEnemy();
-
+        createEnemy(new Vector2(10f, 1.5f), new Vector2(5f, 1.5f), new Vector2(10f, 1.5f));
+        createEnemy(new Vector2(18f, 1.5f), new Vector2(11f, 1.5f), new Vector2(18f, 1.5f));
     }
 
     private void setUpGround() {
@@ -100,14 +105,21 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private void update(Body body) {
         if (!BodyUtils.bodyInBounds(body)) {
             if (BodyUtils.bodyIsEnemy(body) && !runner.isHit()) {
-                createEnemy();
+
             }
             world.destroyBody(body);
         }
     }
 
-    private void createEnemy() {
-        Enemy enemy = new Enemy(WorldUtils.createEnemy(world));
+    private void createEnemy(Vector2 poppingPosition, Vector2 minPosition, Vector2 maxPosition) {
+        EnemyType enemyType = RandomUtils.getRandomEnemyType();
+        // On adapte la position Y de l'ennemi en fonction de son type
+        poppingPosition.set(poppingPosition.x, enemyType.getY());
+        minPosition.set(minPosition.x, enemyType.getY());
+        maxPosition.set(maxPosition.x, enemyType.getY());
+
+        Enemy enemy = new Enemy(WorldUtils.createEnemy(world, poppingPosition, minPosition, maxPosition, enemyType));
+//        Enemy enemy = new Enemy(WorldUtils.createEnemy(world));
         addActor(enemy);
     }
 

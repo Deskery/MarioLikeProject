@@ -42,17 +42,32 @@ public class WorldUtils {
         return body;
     }
     
-    public static Body createEnemy(World world) {
-        EnemyType enemyType = RandomUtils.getRandomEnemyType();
+//    public static Body createEnemy(World world) {
+//        EnemyType enemyType = RandomUtils.getRandomEnemyType();
+//        BodyDef bodyDef = new BodyDef();
+//        bodyDef.type = BodyDef.BodyType.KinematicBody;
+//        bodyDef.position.set(new Vector2(enemyType.getX(), enemyType.getY()));
+//        PolygonShape shape = new PolygonShape();
+//        shape.setAsBox(enemyType.getWidth() / 2, enemyType.getHeight() / 2);
+//        Body body = world.createBody(bodyDef);
+//        body.createFixture(shape, enemyType.getDensity());
+//        body.resetMassData();
+//        EnemyUserData userData = new EnemyUserData(enemyType.getWidth(), enemyType.getHeight());
+//        body.setUserData(userData);
+//        shape.dispose();
+//        return body;
+//    }
+
+    public static Body createEnemy(World world, Vector2 poppingPosition, Vector2 minPosition, Vector2 maxPosition, EnemyType enemyType) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.KinematicBody;
-        bodyDef.position.set(new Vector2(enemyType.getX(), enemyType.getY()));
+        bodyDef.position.set(new Vector2(poppingPosition.x, poppingPosition.y));
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(enemyType.getWidth() / 2, enemyType.getHeight() / 2);
         Body body = world.createBody(bodyDef);
         body.createFixture(shape, enemyType.getDensity());
         body.resetMassData();
-        EnemyUserData userData = new EnemyUserData(enemyType.getWidth(), enemyType.getHeight());
+        EnemyUserData userData = new EnemyUserData(enemyType.getWidth(), enemyType.getHeight(), minPosition, maxPosition);
         body.setUserData(userData);
         shape.dispose();
         return body;
