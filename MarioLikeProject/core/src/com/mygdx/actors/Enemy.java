@@ -17,7 +17,7 @@ public class Enemy extends GameActor {
     @Override
     public void act(float delta) {
         super.act(delta);
-        body.setLinearVelocity(getUserData().getLinearVelocity());
+        //body.setLinearVelocity(getUserData().getLinearVelocity());
     }
 
 }

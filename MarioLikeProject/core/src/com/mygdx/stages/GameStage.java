@@ -22,6 +22,7 @@ import com.mygdx.actors.Enemy;
 import com.mygdx.actors.Ground;
 import com.mygdx.actors.Runner;
 import com.mygdx.utils.BodyUtils;
+import com.mygdx.utils.Constants;
 import com.mygdx.utils.WorldUtils;
 
 public class GameStage extends Stage implements ContactListener, InputProcessor {
@@ -40,13 +41,16 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 
     private OrthographicCamera camera;
     private Box2DDebugRenderer renderer;
+	private boolean rightKeyPressed;
+	private boolean leftKeyPressed;
+	private boolean jumpKeyPressed;
 
     public GameStage() {
     	setUpWorld();
         setupCamera();
         renderer = new Box2DDebugRenderer();
         
-//        setupCamera();
+        setupCamera();
     }
 
     private void setUpWorld() {
@@ -72,6 +76,8 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         camera = new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f);
         camera.update();
+//        camera.position.set(runner.getX(), camera.viewportHeight / 2, 0f);
+//        camera.update();
     }
 
     @Override
@@ -98,12 +104,34 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     }
 
     private void update(Body body) {
+    	
+//    	camera.position.set(runner.getX(), camera.viewportHeight / 2, 0f);
+//        camera.update();
+        
         if (!BodyUtils.bodyInBounds(body)) {
             if (BodyUtils.bodyIsEnemy(body) && !runner.isHit()) {
                 createEnemy();
             }
             world.destroyBody(body);
         }
+        if(rightKeyPressed)
+        {
+        	runner.moveRight();
+        	camera.translate(.0221f, 0);
+        	camera.update();
+        }
+        else if(leftKeyPressed)
+        {
+        	runner.moveLeft();
+        	camera.translate(-.0221f, 0);
+        	camera.update();
+        }        
+        else if(jumpKeyPressed)
+    	{
+    		runner.jump();
+    		
+    	}else runner.stopMove();
+        
     }
 
     private void createEnemy() {
@@ -116,6 +144,8 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     public void draw() {
         super.draw();
         renderer.render(world, camera.combined);
+//        camera.position.set(runner.getX(), runner.getY(), 0);
+//        camera.update();
     }
     
     @Override
@@ -123,22 +153,41 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     	
     	if(keyCode == Keys.SPACE || keyCode == Keys.UP)
     	{
-    		runner.jump();
+    		
+//    		runner.jump();
+    		jumpKeyPressed=true;
     	}
     	else 
     		if (keyCode == Keys.DOWN) {
     			runner.dodge();
 			}
+    		else
+    			if (keyCode == Keys.RIGHT) {
+    				
+    					
+    					rightKeyPressed = true;
+				}
+    			else
+    				if (keyCode == Keys.LEFT) {
+    					leftKeyPressed = true;
+					}
     	
     	return false;
     }
-    
+      
     @Override
     public boolean keyUp(int keyCode) {
     	// TODO Auto-generated method stub
+    	if ( keyCode == Keys.RIGHT ) rightKeyPressed = false;
+    	else if ( keyCode == Keys.LEFT ) leftKeyPressed = false;
+    	
     	if (runner.isDodging()) {
             runner.stopDodge();
         }
+//    	else
+//    		if (runner.isMoving()) {
+//				runner.stopMove();
+//			}
     	return super.keyUp(keyCode);
     }
     
@@ -154,6 +203,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         } else if ((BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsGround(b)) ||
                 (BodyUtils.bodyIsGround(a) && BodyUtils.bodyIsRunner(b))) {
             runner.landed();
+            jumpKeyPressed=false;
         }
 
 
