@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.actors.Background;
 import com.mygdx.actors.Enemy;
 import com.mygdx.actors.Ground;
 import com.mygdx.actors.Runner;
@@ -44,6 +45,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 	private boolean rightKeyPressed;
 	private boolean leftKeyPressed;
 	private boolean jumpKeyPressed;
+	private Background background;
 
     public GameStage() {
     	setUpWorld();
@@ -56,6 +58,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private void setUpWorld() {
         world = WorldUtils.createWorld();
         world.setContactListener(this);
+        //setUpBackground();
         setUpGround();
         setUpRunner();
         createEnemy();
@@ -119,6 +122,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         	runner.moveRight();
         	camera.translate(.0221f, 0);
         	camera.update();
+        	//background.updateXBounds(-.0221f);
         }
         else if(leftKeyPressed)
         {
@@ -251,4 +255,9 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 	public void setWorld(World world) {
 		this.world = world;
 	}
+	
+	private void setUpBackground() {
+		background = new Background();
+        addActor(background);
+    }
 }

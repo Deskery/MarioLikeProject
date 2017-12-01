@@ -11,7 +11,7 @@ public class Constants {
 
     public static final float GROUND_X = 0;
     public static final float GROUND_Y = 0;
-    public static final float GROUND_WIDTH = 25f;
+    public static final float GROUND_WIDTH = 250f;
     public static final float GROUND_HEIGHT = 2f;
     public static final float GROUND_DENSITY = 0f;
     public static final float RUNNER_X = 2;
@@ -32,6 +32,7 @@ public class Constants {
     public static final float RUNNER_HIT_ANGULAR_IMPULSE = 10f;
 	public static final Vector2 RUNNER_MOVE_RIGHT_LINEAR_IMPULSE = new Vector2(4f, 0);
 	public static final Vector2 RUNNER_MOVE_LEFT_LINEAR_IMPULSE = new Vector2(-4f, 0);
+	public static final String BACKGROUND_IMAGE_PATH = "data/background.png";
 
 
 
