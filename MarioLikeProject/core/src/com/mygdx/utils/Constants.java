@@ -33,6 +33,8 @@ public class Constants {
     public static final Vector2 ENEMY_LINEAR_VELOCITY_UP = new Vector2(0, 5f);
     public static final Vector2 ENEMY_LINEAR_VELOCITY_DOWN = new Vector2(0, -5f);
     public static final float RUNNER_HIT_ANGULAR_IMPULSE = 10f;
+	public static final Vector2 RUNNER_MOVE_RIGHT_LINEAR_IMPULSE = new Vector2(4f, 0);
+	public static final Vector2 RUNNER_MOVE_LEFT_LINEAR_IMPULSE = new Vector2(-4f, 0);
 
 
 

@@ -18,7 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.stages.GameStage;
 import com.mygdx.utils.BodyUtils;
 
-public class GameScreen implements Screen ,ContactListener {
+public class GameScreen implements Screen  {
 
 	private GameStage stage;
 	float origin = 0;
@@ -36,7 +36,7 @@ public class GameScreen implements Screen ,ContactListener {
     public void render(float delta) {
         //Clear the screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);    
-       
+        
         //Update the stage
         stage.draw();
         
@@ -107,35 +107,6 @@ public class GameScreen implements Screen ,ContactListener {
 		
 	}
 
-	@Override
-	public void beginContact(Contact contact) {
-		// TODO Auto-generated method stub
-		Body a = contact.getFixtureA().getBody();
-        Body b = contact.getFixtureB().getBody();
-
-        if ((BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsGround(b)) ||
-                (BodyUtils.bodyIsGround(a) && BodyUtils.bodyIsRunner(b))) {
-            stage.getRunner().landed();
-        }
-		
-	}
-
-	@Override
-	public void endContact(Contact contact) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void preSolve(Contact contact, Manifold oldManifold) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void postSolve(Contact contact, ContactImpulse impulse) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 }

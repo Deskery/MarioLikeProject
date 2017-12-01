@@ -47,13 +47,16 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 
     private OrthographicCamera camera;
     private Box2DDebugRenderer renderer;
+	private boolean rightKeyPressed;
+	private boolean leftKeyPressed;
+	private boolean jumpKeyPressed;
 
     public GameStage() {
     	setUpWorld();
         setupCamera();
         renderer = new Box2DDebugRenderer();
         
-//        setupCamera();
+        setupCamera();
     }
 
     private void setUpWorld() {
@@ -84,7 +87,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private void setUpPlatforms() {
         createPlatform(0, 5, 4);
     }
-    
+
     private void setupCamera() {
         camera = new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f);
@@ -121,6 +124,24 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
             }
             world.destroyBody(body);
         }
+        if(rightKeyPressed)
+        {
+        	runner.moveRight();
+        	camera.translate(.0221f, 0);
+        	camera.update();
+        }
+        else if(leftKeyPressed)
+        {
+        	runner.moveLeft();
+        	camera.translate(-.0221f, 0);
+        	camera.update();
+        }
+        else if(jumpKeyPressed)
+    	{
+    		runner.jump();
+
+    	}else runner.stopMove();
+
     }
 
     private void createEnemy(Vector2 poppingPosition, Vector2 minPosition, Vector2 maxPosition) {
@@ -160,19 +181,34 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     	
     	if(keyCode == Keys.SPACE || keyCode == Keys.UP)
     	{
-    		runner.jump();
+
+//    		runner.jump();
+    		jumpKeyPressed=true;
     	}
     	else 
     		if (keyCode == Keys.DOWN) {
     			runner.dodge();
 			}
-    	
+    		else
+    			if (keyCode == Keys.RIGHT) {
+
+
+    					rightKeyPressed = true;
+				}
+    			else
+    				if (keyCode == Keys.LEFT) {
+    					leftKeyPressed = true;
+					}
+
     	return false;
     }
-    
+
     @Override
     public boolean keyUp(int keyCode) {
     	// TODO Auto-generated method stub
+    	if ( keyCode == Keys.RIGHT ) rightKeyPressed = false;
+    	else if ( keyCode == Keys.LEFT ) leftKeyPressed = false;
+
     	if (runner.isDodging()) {
             runner.stopDodge();
         }
@@ -191,6 +227,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         } else if ((BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsGround(b)) ||
                 (BodyUtils.bodyIsGround(a) && BodyUtils.bodyIsRunner(b))) {
             runner.landed();
+            jumpKeyPressed=false;
         } else if (BodyUtils.bodyIsHitBox(a) && BodyUtils.bodyIsRunner(b)) {
 
             EnemyHitBoxUserData hitBoxUserData = (EnemyHitBoxUserData) a.getUserData();
