@@ -28,8 +28,8 @@ public class Constants {
     public static final float RUNNING_SHORT_ENEMY_Y = 1.5f;
     public static final float RUNNING_LONG_ENEMY_Y = 2f;
     public static final float FLYING_ENEMY_Y = 3f;
-    public static final Vector2 ENEMY_LINEAR_VELOCITY_LEFT = new Vector2(-5f, 0);
-    public static final Vector2 ENEMY_LINEAR_VELOCITY_RIGHT = new Vector2(5f, 0);
+    public static final Vector2 ENEMY_LINEAR_VELOCITY_LEFT = new Vector2(-0f, 0);
+    public static final Vector2 ENEMY_LINEAR_VELOCITY_RIGHT = new Vector2(0f, 0);
     public static final Vector2 ENEMY_LINEAR_VELOCITY_UP = new Vector2(0, 5f);
     public static final Vector2 ENEMY_LINEAR_VELOCITY_DOWN = new Vector2(0, -5f);
     public static final float RUNNER_HIT_ANGULAR_IMPULSE = 10f;

@@ -91,7 +91,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     }
 
     private void setUpPlatforms() {
-        createPlatform(0, 5, 4);
+        //createPlatform(0, 5, 4);
     }
 
     private void setupCamera() {
