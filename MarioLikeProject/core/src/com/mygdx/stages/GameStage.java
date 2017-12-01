@@ -81,7 +81,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     }
 
     private void setUpPlatforms() {
-        //createPlatform(0, 5, 4);
+        createPlatform(5, 8, 4);
     }
 
     private void setupCamera() {
@@ -292,8 +292,8 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
                 runner.hit();
             }
         }
-        else if ((BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsGround(b)) ||
-                (BodyUtils.bodyIsGround(a) && BodyUtils.bodyIsRunner(b))) {
+        else if ((BodyUtils.bodyIsRunner(a) && (BodyUtils.bodyIsGround(b) || BodyUtils.bodyIsPlatform(b))) ||
+                ((BodyUtils.bodyIsGround(a) || BodyUtils.bodyIsPlatform(a)) && BodyUtils.bodyIsRunner(b))) {
             runner.landed();
             jumpKeyPressed=false;
         }
