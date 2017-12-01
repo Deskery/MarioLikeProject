@@ -1,5 +1,6 @@
 package com.mygdx.screens;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import com.badlogic.gdx.Gdx;
@@ -41,8 +42,7 @@ public class GameScreen implements Screen  {
         stage.draw();
         
         stage.act(delta);
-        
-        
+
     }
     
 	@Override

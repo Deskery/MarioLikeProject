@@ -9,13 +9,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -23,6 +17,7 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.actors.*;
 import com.mygdx.box2d.EnemyHitBoxUserData;
 import com.mygdx.box2d.EnemyUserData;
+import com.mygdx.box2d.RunnerUserData;
 import com.mygdx.enums.EnemyType;
 import com.mygdx.actors.Background;
 import com.mygdx.actors.Enemy;
@@ -51,10 +46,12 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 
     private OrthographicCamera camera;
     private Box2DDebugRenderer renderer;
-	private boolean rightKeyPressed;
+
+    private boolean rightKeyPressed;
 	private boolean leftKeyPressed;
 	private boolean jumpKeyPressed;
 	private Background background;
+	private ArrayList<Body> bodiesToBeDelete = new ArrayList<Body>();
 
     public GameStage() {
     	setUpWorld();
@@ -102,6 +99,27 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 
     @Override
     public void act(float delta) {
+
+        for (Body b : bodiesToBeDelete) {
+            for (Enemy enemy : enemies) {
+                if (enemy.getUserData().equals(b.getUserData())) {
+                    enemy.remove();
+                }
+            }
+
+            final Array<JointEdge> list = b.getJointList();
+
+            while (list.size > 0) {
+                world.destroyJoint(list.get(0).joint);
+            }
+            world.destroyBody(b);
+            b.setUserData(null);
+            b = null;
+
+
+        }
+        bodiesToBeDelete.clear();
+
         super.act(delta);
 
         Array<Body> bodies = new Array<Body>(world.getBodyCount());
@@ -133,13 +151,13 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         if(rightKeyPressed)
         {
         	runner.moveRight();
-        	camera.translate(.0221f, 0);
+        	camera.translate(.01f, 0);
         	camera.update();
         }
         else if(leftKeyPressed)
         {
         	runner.moveLeft();
-        	camera.translate(-.0221f, 0);
+        	camera.translate(-.01f, 0);
         	camera.update();
         }
         else if(jumpKeyPressed)
@@ -160,12 +178,12 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         ArrayList<Body> bodies = WorldUtils.createEnemy(world, poppingPosition, minPosition, maxPosition, enemyType);
 
         Enemy enemy = new Enemy(bodies.get(0));
-        EnemyHitBox hitBox = new EnemyHitBox(bodies.get(1));
+//        EnemyHitBox hitBox = new EnemyHitBox(bodies.get(1));
 
         addActor(enemy);
-        addActor(hitBox);
+//        addActor(hitBox);
         enemies.add(enemy);
-        hitBoxes.add(hitBox);
+//        hitBoxes.add(hitBox);
     }
 
     private void createPlatform(float xMin, float xMax, float y) {
@@ -227,26 +245,37 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         Body a = contact.getFixtureA().getBody();
         Body b = contact.getFixtureB().getBody();
 
-        if ((BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsEnemy(b)) ||
-                (BodyUtils.bodyIsEnemy(a) && BodyUtils.bodyIsRunner(b))) {
-            runner.hit();
-        } else if ((BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsGround(b)) ||
+        if (BodyUtils.bodyIsRunner(b) && BodyUtils.bodyIsEnemy(a)) {
+
+            EnemyUserData enemyUserData = (EnemyUserData) a.getUserData();
+            RunnerUserData runnerUserData = (RunnerUserData) b.getUserData();
+
+            if (b.getPosition().y >= a.getPosition().y + enemyUserData.getHeight()/2 + runnerUserData.getHeight()/2) {
+                bodiesToBeDelete.add(a);
+                runner.jump();
+            }
+            else {
+                runner.hit();
+            }
+
+
+        } else if (BodyUtils.bodyIsEnemy(b) && BodyUtils.bodyIsRunner(a)){
+            EnemyUserData enemyUserData = (EnemyUserData) b.getUserData();
+            RunnerUserData runnerUserData = (RunnerUserData) a.getUserData();
+
+            if (a.getPosition().y >= b.getPosition().y + enemyUserData.getHeight()/2 + runnerUserData.getHeight()/2) {
+                bodiesToBeDelete.add(b);
+                runner.jump();
+            }
+            else {
+                runner.hit();
+            }
+        }
+        else if ((BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsGround(b)) ||
                 (BodyUtils.bodyIsGround(a) && BodyUtils.bodyIsRunner(b))) {
             runner.landed();
             jumpKeyPressed=false;
-        } else if (BodyUtils.bodyIsHitBox(a) && BodyUtils.bodyIsRunner(b)) {
-
-            EnemyHitBoxUserData hitBoxUserData = (EnemyHitBoxUserData) a.getUserData();
-
-            world.destroyBody(hitBoxUserData.getBodyEnnemy());
-            world.destroyBody(a);
-        } else if (BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsHitBox(b)) {
-            EnemyHitBoxUserData hitBoxUserData = (EnemyHitBoxUserData) b.getUserData();
-
-            world.destroyBody(hitBoxUserData.getBodyEnnemy());
-            world.destroyBody(b);
         }
-
 
     }
 
@@ -286,6 +315,10 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 		return world;
 	}
 
+    public ArrayList<Body> getBodiesToBeDelete() {
+        return bodiesToBeDelete;
+    }
+
 	/**
 	 * @param world the world to set
 	 */
@@ -297,4 +330,15 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 		background = new Background();
         addActor(background);
     }
+
+    public void removeBodySafely(Body body) {
+        //to prevent some obscure c assertion that happened randomly once in a blue moon
+        final Array<JointEdge> list = body.getJointList();
+        while (list.size > 0) {
+            world.destroyJoint(list.get(0).joint);
+        }
+        // actual remove
+        world.destroyBody(body);
+    }
+
 }

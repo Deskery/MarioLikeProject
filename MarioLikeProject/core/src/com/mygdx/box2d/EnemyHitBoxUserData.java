@@ -14,7 +14,7 @@ public class EnemyHitBoxUserData extends UserData {
 
     public EnemyHitBoxUserData(float width, float height, Vector2 beginPosition, Vector2 endPosition, Body bodyEnnemy) {
         super(width, height);
-        userDataType = UserDataType.ENEMY;
+        userDataType = UserDataType.HIT_BOX;
         linearVelocity = Constants.ENEMY_LINEAR_VELOCITY_LEFT;
         this.beginPosition = beginPosition;
         this.endPosition = endPosition;

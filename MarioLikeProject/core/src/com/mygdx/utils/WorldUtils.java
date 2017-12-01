@@ -47,7 +47,8 @@ public class WorldUtils {
 
         // Enemy
         BodyDef bodyDefEnnemi = new BodyDef();
-        bodyDefEnnemi.type = BodyDef.BodyType.KinematicBody;
+        bodyDefEnnemi.type = BodyDef.BodyType.DynamicBody;
+//        bodyDefEnnemi.type = BodyDef.BodyType.KinematicBody;
         bodyDefEnnemi.position.set(new Vector2(poppingPosition.x, poppingPosition.y)); // lmjlslks
         PolygonShape shapeEnnemi = new PolygonShape();
         shapeEnnemi.setAsBox(enemyType.getWidth() / 2, enemyType.getHeight() / 2);
@@ -58,24 +59,24 @@ public class WorldUtils {
         bodyEnnemi.setUserData(enemyUserData);
 
         // HitBox
-        BodyDef bodyDefHitBox = new BodyDef();
-        bodyDefHitBox.type = BodyDef.BodyType.KinematicBody;
-        bodyDefHitBox.position.set(new Vector2(poppingPosition.x, poppingPosition.y + enemyType.getHeight() / 2)); // lmjlslks
-        PolygonShape shapeHitBox = new PolygonShape();
-        shapeHitBox.setAsBox(enemyType.getWidth() / 2, 0.2f);
-        Body bodyHitBox = world.createBody(bodyDefHitBox);
-        bodyHitBox.createFixture(shapeHitBox, enemyType.getDensity());
-        bodyHitBox.resetMassData();
-        EnemyHitBoxUserData hitBoxUserData = new EnemyHitBoxUserData(enemyType.getWidth(), 0.4f, minPosition, maxPosition, bodyEnnemi);
-        bodyHitBox.setUserData(hitBoxUserData);
+//        BodyDef bodyDefHitBox = new BodyDef();
+//        bodyDefHitBox.type = BodyDef.BodyType.KinematicBody;
+//        bodyDefHitBox.position.set(new Vector2(poppingPosition.x, poppingPosition.y + enemyType.getHeight() / 2));
+//        PolygonShape shapeHitBox = new PolygonShape();
+//        shapeHitBox.setAsBox(enemyType.getWidth() / 2 -0.01f, 0.2f);
+//        Body bodyHitBox = world.createBody(bodyDefHitBox);
+//        bodyHitBox.createFixture(shapeHitBox, enemyType.getDensity());
+//        bodyHitBox.resetMassData();
+//        EnemyHitBoxUserData hitBoxUserData = new EnemyHitBoxUserData(enemyType.getWidth(), 0.4f, minPosition, maxPosition, bodyEnnemi);
+//        bodyHitBox.setUserData(hitBoxUserData);
 
         // Dispose shapes
         shapeEnnemi.dispose();
-        shapeHitBox.dispose();
+//        shapeHitBox.dispose();
 
         ArrayList<Body> result = new ArrayList<Body>();
         result.add(bodyEnnemi);
-        result.add(bodyHitBox);
+//        result.add(bodyHitBox);
 
         return result;
     }
