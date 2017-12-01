@@ -250,9 +250,9 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
             EnemyUserData enemyUserData = (EnemyUserData) a.getUserData();
             RunnerUserData runnerUserData = (RunnerUserData) b.getUserData();
 
-            if (b.getPosition().y >= a.getPosition().y + enemyUserData.getHeight()/2 + runnerUserData.getHeight()/2) {
+            if (b.getPosition().y >= a.getPosition().y + enemyUserData.getHeight()/2 + runnerUserData.getHeight()/2 -0.2f) {
                 bodiesToBeDelete.add(a);
-                runner.jump();
+                runner.landed();
             }
             else {
                 runner.hit();
@@ -263,9 +263,9 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
             EnemyUserData enemyUserData = (EnemyUserData) b.getUserData();
             RunnerUserData runnerUserData = (RunnerUserData) a.getUserData();
 
-            if (a.getPosition().y >= b.getPosition().y + enemyUserData.getHeight()/2 + runnerUserData.getHeight()/2) {
+            if (a.getPosition().y >= b.getPosition().y + enemyUserData.getHeight()/2 + runnerUserData.getHeight()/2 -0.2f) {
                 bodiesToBeDelete.add(b);
-                runner.jump();
+                runner.landed();
             }
             else {
                 runner.hit();
