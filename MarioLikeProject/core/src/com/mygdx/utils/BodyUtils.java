@@ -36,4 +36,9 @@ public class BodyUtils {
         return userData != null && userData.getUserDataType() == UserDataType.ENEMY;
     }
 
+    public static boolean bodyIsHitBox(Body body) {
+        UserData userData = (UserData) body.getUserData();
+
+        return userData != null && userData.getUserDataType() == UserDataType.HIT_BOX;
+    }
 }

@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.actors.*;
+import com.mygdx.box2d.EnemyHitBoxUserData;
 import com.mygdx.box2d.EnemyUserData;
 import com.mygdx.enums.EnemyType;
 import com.mygdx.utils.BodyUtils;
@@ -37,6 +38,8 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private World world;
     private Ground ground;
     private Runner runner;
+    private ArrayList<EnemyHitBox> hitBoxes = new ArrayList<EnemyHitBox>();
+    private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 
 
     private final float TIME_STEP = 1 / 300f;
@@ -134,6 +137,8 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 
         addActor(enemy);
         addActor(hitBox);
+        enemies.add(enemy);
+        hitBoxes.add(hitBox);
     }
 
     private void createPlatform(float xMin, float xMax, float y) {
@@ -186,6 +191,17 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         } else if ((BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsGround(b)) ||
                 (BodyUtils.bodyIsGround(a) && BodyUtils.bodyIsRunner(b))) {
             runner.landed();
+        } else if (BodyUtils.bodyIsHitBox(a) && BodyUtils.bodyIsRunner(b)) {
+
+            EnemyHitBoxUserData hitBoxUserData = (EnemyHitBoxUserData) a.getUserData();
+
+            world.destroyBody(hitBoxUserData.getBodyEnnemy());
+            world.destroyBody(a);
+        } else if (BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsHitBox(b)) {
+            EnemyHitBoxUserData hitBoxUserData = (EnemyHitBoxUserData) b.getUserData();
+
+            world.destroyBody(hitBoxUserData.getBodyEnnemy());
+            world.destroyBody(b);
         }
 
 
