@@ -47,6 +47,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 	private ArrayList<Body> bodiesToBeDelete = new ArrayList<Body>();
 	private float runnerInitialX;
 	private float cameraInitialX;
+	private boolean landKeyPressed;
 
     public GameStage() {
     	setUpWorld();
@@ -164,6 +165,9 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         	runner.moveRight();
 //        	camera.translate(.01f, 0);
             camera.position.set(runnerBody.getPosition().x, camera.viewportHeight / 2, 0f);
+//        	camera.translate(.022f, 0);
+			camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
+
         	camera.update();
         	background.updateXBounds(-.01f);
         }
@@ -175,21 +179,33 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         	if(runner.getBody().getWorldCenter().x > runnerInitialX)
         	{
         		if(runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x < runnerInitialX)
-        			if(runner.getBody().getWorldCenter().x-(runner.getBody().getWorldCenter().x-runnerInitialX) > 0){
-        				runner.moveLeft(new Vector2(-(runner.getBody().getWorldCenter().x-runnerInitialX), 0));
-//        				System.err.println(camera.position.x+":"+ cameraInitialX);
-        				if(camera.position.x > cameraInitialX){
-                            camera.position.set(runnerBody.getPosition().x, camera.viewportHeight / 2, 0f);
-        					camera.update();
-        					background.updateXBounds(.01f);
-        				}
+//        			if(runner.getBody().getWorldCenter().x-(runner.getBody().getWorldCenter().x-runnerInitialX) > 0){
+//        				runner.moveLeft(new Vector2(-(runner.getBody().getWorldCenter().x-runnerInitialX), 0));
+//        				if(camera.position.x > cameraInitialX){
+//        					camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
+//
+//        					camera.update();
+//        					background.updateXBounds(.01f);
+//        				}
+//
+//
+////			        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
+//
+//        			}
+//        			else {
+//    					runner.moveLeft();
+////    					camera.translate(-.022f, 0);
+//    					camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
+//    					camera.update();
+//    					background.updateXBounds(.01f);
+//    				}
+        			leftKeyPressed=false;
 
-//			        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
-
-        			}
         		else{
 	        	runner.moveLeft();
-                        camera.position.set(runnerBody.getPosition().x, camera.viewportHeight / 2, 0f);
+//	        	camera.translate(-.022f, 0);
+				camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
+
 //	        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
 	        	camera.update();
 	        	background.updateXBounds(.01f);
@@ -197,21 +213,43 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         	}
         	else
         	{
-        		runner.setPosition(runnerInitialX, runner.getBody().getWorldCenter().y);
-                camera.position.set(runnerBody.getPosition().x, camera.viewportHeight / 2, 0f);
-//        		camera.lookAt(runnerInitialX, 0, camera.position.z);
-        		camera.update();
-	        	background.updateXBounds(0f);
+//        		runner.setPosition(runnerInitialX, runner.getBody().getWorldCenter().y);
+////        		camera.translate(0f, 0);
+//				camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
+//
+////        		camera.lookAt(runnerInitialX, 0, camera.position.z);
+//        		camera.update();
+//	        	background.updateXBounds(0f);
         	}
         }
         else if(jumpKeyPressed)
     	{
     		runner.jump();
-            camera.position.set(runnerBody.getPosition().x, camera.viewportHeight / 2, 0f);
-            camera.update();
-            background.updateXBounds(0f);
+			camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
+			camera.update();
+			if(rightKeyPressed)
+				background.updateXBounds(-.0150f);
+			if(leftKeyPressed)
+			{
+				if(runner.getBody().getWorldCenter().x > runnerInitialX)
+	        	{
+	        		if(runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x < runnerInitialX)
+	        			leftKeyPressed=false;
+	        		else
+	        			background.updateXBounds(.0150f);
+	        	}
+			}
 
-    	}else runner.stopMove();
+    	}else if (landKeyPressed && !rightKeyPressed) {
+
+        	runner.getBody().applyForce(Constants.WORLD_GRAVITY, runner.getBody().getWorldCenter(), true);
+        	camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
+
+//        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
+        	camera.update();
+
+
+		}else runner.stopMove();
 
     }
 
@@ -321,6 +359,11 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
                 ((BodyUtils.bodyIsGround(a) || BodyUtils.bodyIsPlatform(a)) && BodyUtils.bodyIsRunner(b))) {
             runner.landed();
             jumpKeyPressed=false;
+            landKeyPressed=false;
+
+            if ( (BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsPlatform(b) ) || (BodyUtils.bodyIsRunner(b) && BodyUtils.bodyIsPlatform(a) ) ) {
+            	landKeyPressed=true;
+            }
         } else if (BodyUtils.bodyIsCoin(b) && BodyUtils.bodyIsRunner(a)) {
             bodiesToBeDelete.add(b);
             nbPieces++;
@@ -334,6 +377,19 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     @Override
     public void endContact(Contact contact) {
 
+    	Body a = contact.getFixtureA().getBody();
+        Body b = contact.getFixtureB().getBody();
+
+        if ((BodyUtils.bodyIsRunner(a) &&  BodyUtils.bodyIsPlatform(b)) || (BodyUtils.bodyIsPlatform(a) && BodyUtils.bodyIsRunner(b))) {
+    	//TODO : Change y
+//    	runner.getBody().applyLinearImpulse(new Vector2(0,-16f),new Vector2( runner.getBody().getWorldCenter().x+5,runner.getBody().getWorldCenter().y ), true );
+//        	runner.getBody().setTransform(runner.getBody().getWorldCenter().x+5, runner.getBody().getWorldCenter().y, 0);
+//        	runner.getBody().applyForce(Constants.WORLD_GRAVITY, runner.getBody().getWorldCenter(), true);
+//        	jumpKeyPressed=true;
+        	landKeyPressed=true;
+        	rightKeyPressed=false;
+    		leftKeyPressed=false;
+        }
     }
 
     @Override
