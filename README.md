@@ -1,5 +1,7 @@
 # MarioLikeProject
 
+Notre projet est un jeu de plateforme 2D type Mario. Le joueur devra réaliser un parcours comprenant une série d'obstacles et d'ennemis avec pour seuls mouvements "avancer", "reculer" et "sauter". 
+
 # Comment déployer ?
 1 Cloner le projet 
 
