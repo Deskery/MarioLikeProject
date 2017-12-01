@@ -13,11 +13,15 @@ File -> Import -> Gradle -> Gradle Project
 Sélectionner le répertoire du projet 
 Choisir le sous dossier « MarioLikeProject » contenu dans le répertoire du projet cloné 
  
-![image](https://user-images.githubusercontent.com/22750403/33494679-04b97912-d692-11e7-9869-501304f0d59b.png)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22750403/33494679-04b97912-d692-11e7-9869-501304f0d59b.png" width="350"/>
+</p>
 
 3 Exécuter le projet
 Apres l’importation, assurez-vous de l’ajout de trois nouveaux projets (MarioLikeProject, my-gdx-game-core, my-gdx-game-desktop) dans votre IDE
 
-![3](https://user-images.githubusercontent.com/22750403/33494690-0dc3ee0c-d692-11e7-94ac-8eee66306605.png)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/22750403/33494690-0dc3ee0c-d692-11e7-94ac-8eee66306605.png" width="350"/>
+</p>
  
 Exécuter la classe DesktopLauncher du projet my-gdx-game-desktop pour lancer le jeu.
