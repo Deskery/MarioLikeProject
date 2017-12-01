@@ -4,6 +4,8 @@ import java.awt.RenderingHints.Key;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+import javax.swing.plaf.basic.BasicTextUI.BasicHighlighter;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
@@ -55,19 +57,21 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 	private boolean leftKeyPressed;
 	private boolean jumpKeyPressed;
 	private Background background;
+	private float runnerInitialX;
+	private float cameraInitialX;
 
     public GameStage() {
     	setUpWorld();
         setupCamera();
         renderer = new Box2DDebugRenderer();
         
-        setupCamera();
+//        setupCamera();
     }
 
     private void setUpWorld() {
         world = WorldUtils.createWorld();
         world.setContactListener(this);
-        //setUpBackground();
+        setUpBackground();
         setUpGround();
         setUpEnemies();
         setUpPlatforms();
@@ -83,6 +87,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private void setUpRunner() {
         runner = new Runner(WorldUtils.createRunner(world));
         addActor(runner);
+        runnerInitialX = runner.getBody().getPosition().x;
     }
 
     private void setUpEnemies() {
@@ -97,6 +102,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private void setupCamera() {
         camera = new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f);
+        cameraInitialX = camera.position.x;
         camera.update();
     }
 
@@ -130,17 +136,49 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
             }
             world.destroyBody(body);
         }
-        if(rightKeyPressed)
+        if(rightKeyPressed && !jumpKeyPressed)
         {
         	runner.moveRight();
-        	camera.translate(.0221f, 0);
+        	camera.translate(.01f, 0);
         	camera.update();
+        	background.updateXBounds(-.01f);
         }
-        else if(leftKeyPressed)
+        else if(leftKeyPressed && !jumpKeyPressed)
         {
-        	runner.moveLeft();
-        	camera.translate(-.0221f, 0);
-        	camera.update();
+//        	System.err.println(runnerInitialX +":"+ runner.getBody().getWorldCenter().x);
+//        	System.err.println("pppppp"+runnerInitialX +":"+ (runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x));
+
+        	if(runner.getBody().getWorldCenter().x > runnerInitialX)
+        	{
+        		if(runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x < runnerInitialX)
+        			if(runner.getBody().getWorldCenter().x-(runner.getBody().getWorldCenter().x-runnerInitialX) > 0){
+        				runner.moveLeft(new Vector2(-(runner.getBody().getWorldCenter().x-runnerInitialX), 0));
+//        				System.err.println(camera.position.x+":"+ cameraInitialX);
+        				if(camera.position.x > cameraInitialX){
+        					camera.translate(-.01f, 0);
+        					camera.update();
+        					background.updateXBounds(.01f);
+        				}
+        				
+//			        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
+			        		
+        			}
+        		else{
+	        	runner.moveLeft();
+	        	camera.translate(-.01f, 0);
+//	        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
+	        	camera.update();
+	        	background.updateXBounds(.01f);
+        		}
+        	}
+        	else
+        	{
+        		runner.setPosition(runnerInitialX, runner.getBody().getWorldCenter().y);
+        		camera.translate(0f, 0);
+//        		camera.lookAt(runnerInitialX, 0, camera.position.z);
+        		camera.update();
+	        	background.updateXBounds(0f);
+        	}
         }
         else if(jumpKeyPressed)
     	{
@@ -148,6 +186,8 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 
     	}else runner.stopMove();
 
+       
+        
     }
 
     private void createEnemy(Vector2 poppingPosition, Vector2 minPosition, Vector2 maxPosition) {
