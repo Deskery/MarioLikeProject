@@ -73,6 +73,15 @@ public class Runner extends GameActor {
     	
     }
     
+    public void moveLeft(Vector2 vector){
+    	//TODO : Supr if? -> Test
+    	if (!(dodging || hit || jumping)) {
+    		body.setLinearVelocity(vector);
+    		setMoving(true);
+    	}
+    	
+    }
+    
     public void stopMove(){
     	setMoving(false);
     	body.setLinearVelocity(new Vector2(0,0));
