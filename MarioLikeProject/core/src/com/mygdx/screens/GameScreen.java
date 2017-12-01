@@ -7,6 +7,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -18,10 +20,14 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.stages.GameStage;
 import com.mygdx.utils.BodyUtils;
+import com.mygdx.utils.Constants;
+import com.sun.glass.ui.View;
 
 public class GameScreen implements Screen  {
 
-	private GameStage stage;
+    private BitmapFont font = new BitmapFont();
+    private SpriteBatch batch = new SpriteBatch();
+    private GameStage stage;
 	float origin = 0;
 	private boolean jump = false;
 
@@ -42,6 +48,10 @@ public class GameScreen implements Screen  {
         stage.draw();
         
         stage.act(delta);
+
+        batch.begin();
+        font.draw(batch, "Coins : " + stage.getNbPieces(), Constants.APP_WIDTH - 80, Constants.APP_HEIGHT - 20);
+        batch.end();
 
     }
     

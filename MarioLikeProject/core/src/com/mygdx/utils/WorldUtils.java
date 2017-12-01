@@ -75,4 +75,21 @@ public class WorldUtils {
         shape.dispose();
         return body;
     }
+
+    public static Body createCoin(World world, float x, float y) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.KinematicBody;
+
+        float width = 0.4f;
+        float height = 0.4f;
+        bodyDef.position.set(new Vector2(x, y));
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2, height / 2);
+        Body body = world.createBody(bodyDef);
+        body.createFixture(shape, 3f);
+        CoinUserData userData = new CoinUserData();
+        body.setUserData(userData);
+        shape.dispose();
+        return body;
+    }
 }

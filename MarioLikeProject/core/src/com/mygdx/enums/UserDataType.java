@@ -5,5 +5,6 @@ public enum UserDataType {
     RUNNER,
     ENEMY,
     HIT_BOX,
+    COIN,
     PLATFORM
 }

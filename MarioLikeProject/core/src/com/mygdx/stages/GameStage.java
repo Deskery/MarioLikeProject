@@ -31,7 +31,8 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private Ground ground;
     private Runner runner;
     private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
-
+    private ArrayList<Coin> coins = new ArrayList<Coin>();
+    private int nbPieces = 0;
 
     private final float TIME_STEP = 1 / 300f;
     private float accumulator = 0f;
@@ -60,8 +61,8 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         setUpGround();
         setUpEnemies();
         setUpPlatforms();
+        setUpCoins();
         setUpRunner();
-
     }
 
     private void setUpGround() {
@@ -84,10 +85,15 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         createPlatform(5, 8, 4);
     }
 
+    private void setUpCoins() {
+        createCoin(6, 5);
+    }
+
     private void setupCamera() {
         camera = new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f);
-        cameraInitialX = camera.position.x;
+        camera.position.set(runner.getBody().getPosition().x, camera.viewportHeight / 2, 0f);
+//        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f);
+//        cameraInitialX = camera.position.x;
         camera.update();
     }
 
@@ -98,6 +104,12 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
             for (Enemy enemy : enemies) {
                 if (enemy.getUserData().equals(b.getUserData())) {
                     enemy.remove();
+                }
+            }
+
+            for(Coin coin : coins) {
+                if (coin.getUserData().equals(b.getUserData())) {
+                    coin.remove();
                 }
             }
 
@@ -136,16 +148,22 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     }
 
     private void update(Body body) {
+        Body runnerBody = runner.getBody();
+
         if (!BodyUtils.bodyInBounds(body)) {
             if (BodyUtils.bodyIsEnemy(body) && !runner.isHit()) {
 
             }
             world.destroyBody(body);
         }
+
+
+
         if(rightKeyPressed && !jumpKeyPressed)
         {
         	runner.moveRight();
-        	camera.translate(.01f, 0);
+//        	camera.translate(.01f, 0);
+            camera.position.set(runnerBody.getPosition().x, camera.viewportHeight / 2, 0f);
         	camera.update();
         	background.updateXBounds(-.01f);
         }
@@ -161,7 +179,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         				runner.moveLeft(new Vector2(-(runner.getBody().getWorldCenter().x-runnerInitialX), 0));
 //        				System.err.println(camera.position.x+":"+ cameraInitialX);
         				if(camera.position.x > cameraInitialX){
-        					camera.translate(-.01f, 0);
+                            camera.position.set(runnerBody.getPosition().x, camera.viewportHeight / 2, 0f);
         					camera.update();
         					background.updateXBounds(.01f);
         				}
@@ -171,7 +189,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         			}
         		else{
 	        	runner.moveLeft();
-	        	camera.translate(-.01f, 0);
+                        camera.position.set(runnerBody.getPosition().x, camera.viewportHeight / 2, 0f);
 //	        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
 	        	camera.update();
 	        	background.updateXBounds(.01f);
@@ -180,7 +198,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         	else
         	{
         		runner.setPosition(runnerInitialX, runner.getBody().getWorldCenter().y);
-        		camera.translate(0f, 0);
+                camera.position.set(runnerBody.getPosition().x, camera.viewportHeight / 2, 0f);
 //        		camera.lookAt(runnerInitialX, 0, camera.position.z);
         		camera.update();
 	        	background.updateXBounds(0f);
@@ -189,6 +207,9 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         else if(jumpKeyPressed)
     	{
     		runner.jump();
+            camera.position.set(runnerBody.getPosition().x, camera.viewportHeight / 2, 0f);
+            camera.update();
+            background.updateXBounds(0f);
 
     	}else runner.stopMove();
 
@@ -212,6 +233,12 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 
         Platform platform = new Platform(WorldUtils.createPlatform(world, xMin, xMax, y));
         addActor(platform);
+    }
+
+    private void createCoin(float x, float y) {
+        Coin coin = new Coin(WorldUtils.createCoin(world, x, y));
+        addActor(coin);
+        coins.add(coin);
     }
 
 
@@ -279,7 +306,6 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
                 runner.hit();
             }
 
-
         } else if (BodyUtils.bodyIsEnemy(b) && BodyUtils.bodyIsRunner(a)){
             EnemyUserData enemyUserData = (EnemyUserData) b.getUserData();
             RunnerUserData runnerUserData = (RunnerUserData) a.getUserData();
@@ -291,11 +317,16 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
             else {
                 runner.hit();
             }
-        }
-        else if ((BodyUtils.bodyIsRunner(a) && (BodyUtils.bodyIsGround(b) || BodyUtils.bodyIsPlatform(b))) ||
+        } else if ((BodyUtils.bodyIsRunner(a) && (BodyUtils.bodyIsGround(b) || BodyUtils.bodyIsPlatform(b))) ||
                 ((BodyUtils.bodyIsGround(a) || BodyUtils.bodyIsPlatform(a)) && BodyUtils.bodyIsRunner(b))) {
             runner.landed();
             jumpKeyPressed=false;
+        } else if (BodyUtils.bodyIsCoin(b) && BodyUtils.bodyIsRunner(a)) {
+            bodiesToBeDelete.add(b);
+            nbPieces++;
+        } else if (BodyUtils.bodyIsCoin(a) && BodyUtils.bodyIsRunner(b)) {
+            bodiesToBeDelete.add(a);
+            nbPieces++;
         }
 
     }
@@ -350,5 +381,9 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 	private void setUpBackground() {
 		background = new Background();
         addActor(background);
+    }
+
+    public int getNbPieces() {
+        return nbPieces;
     }
 }
