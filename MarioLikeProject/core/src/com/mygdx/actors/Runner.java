@@ -27,8 +27,7 @@ public class Runner extends GameActor {
     	if (!(jumping || dodging|| hit)) {
 //            body.applyLinearImpulse(13f, 13f, body.getPosition().x, body.getPosition().y, true);
 //    		body.applyLinearImpulse(0, 1.0f, body.getPosition().x, body.getPosition().y, true);
-    		 float posx = body.getPosition().x;
-    		 body.applyLinearImpulse(new Vector2(0,13f), body.getPosition(), true);
+    		 body.applyLinearImpulse(new Vector2(0,16f), body.getPosition(), true);
 //    		 body.setGravityScale(5f);
              jumping = true;
 

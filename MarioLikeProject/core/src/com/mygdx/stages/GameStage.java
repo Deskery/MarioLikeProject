@@ -24,6 +24,10 @@ import com.mygdx.actors.*;
 import com.mygdx.box2d.EnemyHitBoxUserData;
 import com.mygdx.box2d.EnemyUserData;
 import com.mygdx.enums.EnemyType;
+import com.mygdx.actors.Background;
+import com.mygdx.actors.Enemy;
+import com.mygdx.actors.Ground;
+import com.mygdx.actors.Runner;
 import com.mygdx.utils.BodyUtils;
 import com.mygdx.utils.Constants;
 import com.mygdx.utils.RandomUtils;
@@ -50,6 +54,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 	private boolean rightKeyPressed;
 	private boolean leftKeyPressed;
 	private boolean jumpKeyPressed;
+	private Background background;
 
     public GameStage() {
     	setUpWorld();
@@ -62,6 +67,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private void setUpWorld() {
         world = WorldUtils.createWorld();
         world.setContactListener(this);
+        //setUpBackground();
         setUpGround();
         setUpEnemies();
         setUpPlatforms();
@@ -286,4 +292,9 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 	public void setWorld(World world) {
 		this.world = world;
 	}
+
+	private void setUpBackground() {
+		background = new Background();
+        addActor(background);
+    }
 }
