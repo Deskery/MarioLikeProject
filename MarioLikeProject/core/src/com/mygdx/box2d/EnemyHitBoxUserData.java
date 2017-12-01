@@ -5,18 +5,20 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.enums.UserDataType;
 import com.mygdx.utils.Constants;
 
-public class EnemyUserData extends UserData {
+public class EnemyHitBoxUserData extends UserData {
 
     private Vector2 linearVelocity;
     private Vector2 beginPosition;
     private Vector2 endPosition;
+    private Body bodyEnnemy;
 
-    public EnemyUserData(float width, float height, Vector2 beginPosition, Vector2 endPosition) {
+    public EnemyHitBoxUserData(float width, float height, Vector2 beginPosition, Vector2 endPosition, Body bodyEnnemy) {
         super(width, height);
         userDataType = UserDataType.ENEMY;
         linearVelocity = Constants.ENEMY_LINEAR_VELOCITY_LEFT;
         this.beginPosition = beginPosition;
         this.endPosition = endPosition;
+        this.bodyEnnemy = bodyEnnemy;
     }
 
     public void setLinearVelocity(Vector2 linearVelocity) {
@@ -41,5 +43,13 @@ public class EnemyUserData extends UserData {
 
     public void setEndPosition(Vector2 endPosition) {
         this.endPosition = endPosition;
+    }
+
+    public Body getBodyEnnemy() {
+        return bodyEnnemy;
+    }
+
+    public void setBodyEnnemy(Body bodyEnnemy) {
+        this.bodyEnnemy = bodyEnnemy;
     }
 }

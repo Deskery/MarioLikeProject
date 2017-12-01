@@ -7,6 +7,7 @@ import com.mygdx.utils.Constants;
 public class Enemy extends GameActor {
 
     public Enemy(Body body) {
+
         super(body);
     }
 
