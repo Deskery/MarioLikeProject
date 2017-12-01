@@ -267,8 +267,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     }
 
     private void createPlatform(float xMin, float xMax, float y) {
-//        EnemyType enemyType = RandomUtils.getRandomEnemyType();
-
+//        PlatformType platformType = RandomUtils.getRandomPlatformType();
         Platform platform = new Platform(WorldUtils.createPlatform(world, xMin, xMax, y));
         addActor(platform);
     }
