@@ -4,11 +4,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.mygdx.actors.EnemyHitBox;
 import com.mygdx.box2d.*;
 import com.mygdx.enums.EnemyType;
-
-import java.util.ArrayList;
 
 public class WorldUtils {
 
@@ -43,13 +40,11 @@ public class WorldUtils {
         return body;
     }
 
-    public static ArrayList<Body> createEnemy(World world, Vector2 poppingPosition, Vector2 minPosition, Vector2 maxPosition, EnemyType enemyType) {
+    public static Body createEnemy(World world, Vector2 poppingPosition, Vector2 minPosition, Vector2 maxPosition, EnemyType enemyType) {
 
-        // Enemy
         BodyDef bodyDefEnnemi = new BodyDef();
-        bodyDefEnnemi.type = BodyDef.BodyType.DynamicBody;
-//        bodyDefEnnemi.type = BodyDef.BodyType.KinematicBody;
-        bodyDefEnnemi.position.set(new Vector2(poppingPosition.x, poppingPosition.y)); // lmjlslks
+        bodyDefEnnemi.type = BodyDef.BodyType.KinematicBody;
+        bodyDefEnnemi.position.set(new Vector2(poppingPosition.x, poppingPosition.y));
         PolygonShape shapeEnnemi = new PolygonShape();
         shapeEnnemi.setAsBox(enemyType.getWidth() / 2, enemyType.getHeight() / 2);
         Body bodyEnnemi = world.createBody(bodyDefEnnemi);
@@ -58,27 +53,9 @@ public class WorldUtils {
         EnemyUserData enemyUserData = new EnemyUserData(enemyType.getWidth(), enemyType.getHeight(), minPosition, maxPosition);
         bodyEnnemi.setUserData(enemyUserData);
 
-        // HitBox
-//        BodyDef bodyDefHitBox = new BodyDef();
-//        bodyDefHitBox.type = BodyDef.BodyType.KinematicBody;
-//        bodyDefHitBox.position.set(new Vector2(poppingPosition.x, poppingPosition.y + enemyType.getHeight() / 2));
-//        PolygonShape shapeHitBox = new PolygonShape();
-//        shapeHitBox.setAsBox(enemyType.getWidth() / 2 -0.01f, 0.2f);
-//        Body bodyHitBox = world.createBody(bodyDefHitBox);
-//        bodyHitBox.createFixture(shapeHitBox, enemyType.getDensity());
-//        bodyHitBox.resetMassData();
-//        EnemyHitBoxUserData hitBoxUserData = new EnemyHitBoxUserData(enemyType.getWidth(), 0.4f, minPosition, maxPosition, bodyEnnemi);
-//        bodyHitBox.setUserData(hitBoxUserData);
-
-        // Dispose shapes
         shapeEnnemi.dispose();
-//        shapeHitBox.dispose();
 
-        ArrayList<Body> result = new ArrayList<Body>();
-        result.add(bodyEnnemi);
-//        result.add(bodyHitBox);
-
-        return result;
+        return bodyEnnemi;
     }
 
     public static Body createPlatform(World world, float xMin, float xMax, float y) {

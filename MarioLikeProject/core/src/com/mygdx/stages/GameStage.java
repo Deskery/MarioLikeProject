@@ -1,23 +1,14 @@
 package com.mygdx.stages;
 
-import java.awt.RenderingHints.Key;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-
-import javax.swing.plaf.basic.BasicTextUI.BasicHighlighter;
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.actors.*;
-import com.mygdx.box2d.EnemyHitBoxUserData;
 import com.mygdx.box2d.EnemyUserData;
 import com.mygdx.box2d.RunnerUserData;
 import com.mygdx.enums.EnemyType;
@@ -39,7 +30,6 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private World world;
     private Ground ground;
     private Runner runner;
-    private ArrayList<EnemyHitBox> hitBoxes = new ArrayList<EnemyHitBox>();
     private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 
 
@@ -211,15 +201,10 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         minPosition.set(minPosition.x, enemyType.getY());
         maxPosition.set(maxPosition.x, enemyType.getY());
 
-        ArrayList<Body> bodies = WorldUtils.createEnemy(world, poppingPosition, minPosition, maxPosition, enemyType);
-
-        Enemy enemy = new Enemy(bodies.get(0));
-        //EnemyHitBox hitBox = new EnemyHitBox(bodies.get(1));
+        Enemy enemy = new Enemy(WorldUtils.createEnemy(world, poppingPosition, minPosition, maxPosition, enemyType));
 
         addActor(enemy);
-        //addActor(hitBox);
         enemies.add(enemy);
-        //hitBoxes.add(hitBox);
     }
 
     private void createPlatform(float xMin, float xMax, float y) {
