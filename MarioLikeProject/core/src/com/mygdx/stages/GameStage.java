@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -38,7 +39,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private boolean rightKeyPressed;
 	private boolean leftKeyPressed;
 	private boolean jumpKeyPressed;
-	private Background background;
+//	private Background background;
 	private ArrayList<Body> bodiesToBeDelete = new ArrayList<Body>();
 	private float runnerInitialX;
 	private float cameraInitialX;
@@ -51,7 +52,6 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     public GameStage() {
     	setUpWorld();
         setupCamera();
-        
         renderer = new Box2DDebugRenderer();
     }
 
@@ -79,7 +79,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 
     private void setUpRunner() {
         runner = new Runner(WorldUtils.createRunner(world));
-        addActor(runner);
+//        addActor(runner);
         runnerInitialX = runner.getBody().getPosition().x;
     }
 
@@ -146,6 +146,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     }
 
     private void update(Body body) {
+//    	System.err.println(runner.getTexture().getHeight());
         if (!BodyUtils.bodyInBounds(body)) {
             if (BodyUtils.bodyIsEnemy(body) && !runner.isHit()) {
 
@@ -159,7 +160,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 			camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
 
         	camera.update();
-        	background.updateXBounds(-.01f);
+//        	background.updateXBounds(-.01f);
         }
         else if(leftKeyPressed && !jumpKeyPressed)
         {
@@ -190,25 +191,25 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 ////    					background.updateXBounds(.01f);
 ////    				}
 //        			leftKeyPressed=false;
-        	if(runner.getBody().getWorldCenter().x == 2f)
-        	{
-        		leftKeyPressed= false;
-        	}
-        	else if(runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x < 2f && runner.getBody().getWorldCenter().x-(runner.getBody().getWorldCenter().x-runnerInitialX) > 0)
-        	{
-        		runner.moveLeft(new Vector2(-(runner.getBody().getWorldCenter().x-runnerInitialX), 0));
-        	}
-
-        		else{
+//        	if(runner.getBody().getWorldCenter().x == 2f)
+//        	{
+//        		leftKeyPressed= false;
+//        	}
+//        	else if(runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x < 2f && runner.getBody().getWorldCenter().x-(runner.getBody().getWorldCenter().x-runnerInitialX) > 0)
+//        	{
+//        		runner.moveLeft(new Vector2(-(runner.getBody().getWorldCenter().x-runnerInitialX), 0));
+//        	}
+//
+//        		else{
 	        	runner.moveLeft();
 //	        	camera.translate(-.022f, 0);
 				camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
 
 //	        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
 	        	camera.update();
-	        	background.updateXBounds(.01f);
+//	        	background.updateXBounds(.01f);
 	        	
-        		}
+//        		}
         	
 //        	else
 //        	{
@@ -227,15 +228,15 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 			camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
 			camera.update();
 			if(rightKeyPressed)
-				background.updateXBounds(-.0150f);
+//				background.updateXBounds(-.0150f);
 			if(leftKeyPressed)
 			{
 				if(runner.getBody().getWorldCenter().x > runnerInitialX)
 	        	{
 	        		if(runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x < runnerInitialX)
 	        			leftKeyPressed=false;
-	        		else
-	        			background.updateXBounds(.0150f);
+//	        		else
+//	        			background.updateXBounds(.0150f);
 	        	}
 			}
 
@@ -429,8 +430,8 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 	}
 
 	private void setUpBackground() {
-		background = new Background();
-        addActor(background);
+//		background = new Background();
+//        addActor(background);
     }
 
 	/**
