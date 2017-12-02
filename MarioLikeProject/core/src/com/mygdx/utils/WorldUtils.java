@@ -1,21 +1,17 @@
 package com.mygdx.utils;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.MassData;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.box2d.*;
 import com.mygdx.enums.EnemyType;
 
 public class WorldUtils {
 
-    public static World createWorld() {
-        return new World(Constants.WORLD_GRAVITY, true);
-    }
-
     public static Body createGround(World world) {
         BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(new Vector2(Constants.GROUND_X, Constants.GROUND_Y));
         Body body = world.createBody(bodyDef);
         PolygonShape shape = new PolygonShape();
@@ -81,17 +77,29 @@ public class WorldUtils {
     }
 
     public static Body createCoin(World world, float x, float y) {
+        float radius = 0.4f;;
+
+        // body definition
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.KinematicBody;
-
-        float width = 0.4f;
-        float height = 0.4f;
         bodyDef.position.set(new Vector2(x, y));
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2, height / 2);
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(radius / 2);
+
         Body body = world.createBody(bodyDef);
         body.createFixture(shape, 3f);
+
         CoinUserData userData = new CoinUserData();
+
+        Texture texture = new Texture(Gdx.files.internal("data/coin.png"));
+//        Sprite spriteCoin = new Sprite(texture);
+        Sprite spriteCoin = new Sprite(texture,0,0,40,40);
+//        spriteCoin.setSize(width, height);
+        spriteCoin.setOrigin(x, y);
+        spriteCoin.setPosition(body.getPosition().x, body.getPosition().y);
+        userData.setSprite(spriteCoin);
+
         body.setUserData(userData);
         shape.dispose();
         return body;

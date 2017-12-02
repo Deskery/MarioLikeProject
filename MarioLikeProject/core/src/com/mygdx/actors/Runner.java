@@ -35,6 +35,10 @@ public class Runner extends GameActor {
 
     }
 
+    public boolean isJumping() {
+        return jumping;
+    }
+
     public void landed() {
     	
         jumping = false;

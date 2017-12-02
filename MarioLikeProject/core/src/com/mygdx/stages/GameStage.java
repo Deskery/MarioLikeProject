@@ -7,8 +7,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.actors.*;
+import com.mygdx.box2d.CoinUserData;
 import com.mygdx.box2d.EnemyUserData;
 import com.mygdx.box2d.RunnerUserData;
 import com.mygdx.enums.EnemyType;
@@ -21,10 +23,10 @@ import com.mygdx.utils.Constants;
 import com.mygdx.utils.RandomUtils;
 import com.mygdx.utils.WorldUtils;
 
-public class GameStage extends Stage implements ContactListener, InputProcessor {
+public class GameStage extends Stage implements InputProcessor {
 
     // This will be our viewport measurements while working with the debug renderer
-    private static final int VIEWPORT_WIDTH = 20;
+    public static final int VIEWPORT_WIDTH = 20;
     private static final int VIEWPORT_HEIGHT = 13;
 
     private World world;
@@ -33,6 +35,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
     private ArrayList<Coin> coins = new ArrayList<Coin>();
     private int nbPieces = 0;
+    private int score = 0;
 
     private final float TIME_STEP = 1 / 300f;
     private float accumulator = 0f;
@@ -43,59 +46,53 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     private boolean rightKeyPressed;
 	private boolean leftKeyPressed;
 	private boolean jumpKeyPressed;
+    private boolean landKeyPressed;
 	private Background background;
 	private ArrayList<Body> bodiesToBeDelete = new ArrayList<Body>();
 	private float runnerInitialX;
-	private float cameraInitialX;
-	private boolean landKeyPressed;
 
     public GameStage() {
-    	setUpWorld();
-        setupCamera();
-        renderer = new Box2DDebugRenderer();
+//    	setUpWorld();
+//        setupCamera();
+//        renderer = new Box2DDebugRenderer();
     }
 
     private void setUpWorld() {
-        world = WorldUtils.createWorld();
-        world.setContactListener(this);
+//        world.setContactListener(this);
         setUpBackground();
-        setUpGround();
-        setUpEnemies();
-        setUpPlatforms();
-        setUpCoins();
-        setUpRunner();
     }
 
-    private void setUpGround() {
+    public void createStage(World world) {
+        setUpRunner(world);
+        setUpGround(world);
+        setUpEnemies(world);
+        setUpPlatforms(world);
+        setUpCoins(world);
+    }
+
+    private void setUpGround(World world) {
         ground = new Ground(WorldUtils.createGround(world));
-        addActor(ground);
+//        addActor(ground);
     }
 
-    private void setUpRunner() {
+    private void setUpRunner(World world) {
         runner = new Runner(WorldUtils.createRunner(world));
-        addActor(runner);
-        runnerInitialX = runner.getBody().getPosition().x;
+//        addActor(runner);
+//        runnerInitialX = runner.getBody().getPosition().x;
     }
 
-    private void setUpEnemies() {
-        createEnemy(new Vector2(10f, 1.5f), new Vector2(5f, 1.5f), new Vector2(10f, 1.5f));
-        createEnemy(new Vector2(18f, 1.5f), new Vector2(11f, 1.5f), new Vector2(18f, 1.5f));
+    private void setUpEnemies(World world) {
+        createEnemy(world, new Vector2(10f, 1.5f), new Vector2(5f, 1.5f), new Vector2(10f, 1.5f));
+        createEnemy(world,new Vector2(18f, 1.5f), new Vector2(11f, 1.5f), new Vector2(18f, 1.5f));
     }
 
-    private void setUpPlatforms() {
-        createPlatform(5, 8, 4);
+    private void setUpPlatforms(World world) {
+        createPlatform(world, 5, 8, 4);
     }
 
-    private void setUpCoins() {
-        createCoin(6, 5);
-    }
-
-    private void setupCamera() {
-        camera = new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
-        camera.position.set(runner.getBody().getPosition().x, camera.viewportHeight / 2, 0f);
-//        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0f);
-//        cameraInitialX = camera.position.x;
-        camera.update();
+    private void setUpCoins(World world) {
+        createCoin(world, 6, 5);
+        createCoin(world, 7.5f, 5);
     }
 
     @Override
@@ -133,7 +130,7 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         world.getBodies(bodies);
 
         for (Body body : bodies) {
-            update(body);
+//            update(body);
         }
 
         // Fixed timestep
@@ -144,116 +141,9 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
             accumulator -= TIME_STEP;
         }
 
-        //TODO: Implement interpolation
-
     }
 
-    private void update(Body body) {
-        Body runnerBody = runner.getBody();
-
-        if (!BodyUtils.bodyInBounds(body)) {
-            if (BodyUtils.bodyIsEnemy(body) && !runner.isHit()) {
-
-            }
-            world.destroyBody(body);
-        }
-
-
-
-        if(rightKeyPressed && !jumpKeyPressed)
-        {
-        	runner.moveRight();
-//        	camera.translate(.01f, 0);
-            camera.position.set(runnerBody.getPosition().x, camera.viewportHeight / 2, 0f);
-//        	camera.translate(.022f, 0);
-			camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
-
-        	camera.update();
-        	background.updateXBounds(-.01f);
-        }
-        else if(leftKeyPressed && !jumpKeyPressed)
-        {
-//        	System.err.println(runnerInitialX +":"+ runner.getBody().getWorldCenter().x);
-//        	System.err.println("pppppp"+runnerInitialX +":"+ (runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x));
-
-        	if(runner.getBody().getWorldCenter().x > runnerInitialX)
-        	{
-        		if(runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x < runnerInitialX)
-//        			if(runner.getBody().getWorldCenter().x-(runner.getBody().getWorldCenter().x-runnerInitialX) > 0){
-//        				runner.moveLeft(new Vector2(-(runner.getBody().getWorldCenter().x-runnerInitialX), 0));
-//        				if(camera.position.x > cameraInitialX){
-//        					camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
-//
-//        					camera.update();
-//        					background.updateXBounds(.01f);
-//        				}
-//
-//
-////			        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
-//
-//        			}
-//        			else {
-//    					runner.moveLeft();
-////    					camera.translate(-.022f, 0);
-//    					camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
-//    					camera.update();
-//    					background.updateXBounds(.01f);
-//    				}
-        			leftKeyPressed=false;
-
-        		else{
-	        	runner.moveLeft();
-//	        	camera.translate(-.022f, 0);
-				camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
-
-//	        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
-	        	camera.update();
-	        	background.updateXBounds(.01f);
-        		}
-        	}
-        	else
-        	{
-//        		runner.setPosition(runnerInitialX, runner.getBody().getWorldCenter().y);
-////        		camera.translate(0f, 0);
-//				camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
-//
-////        		camera.lookAt(runnerInitialX, 0, camera.position.z);
-//        		camera.update();
-//	        	background.updateXBounds(0f);
-        	}
-        }
-        else if(jumpKeyPressed)
-    	{
-    		runner.jump();
-			camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
-			camera.update();
-			if(rightKeyPressed)
-				background.updateXBounds(-.0150f);
-			if(leftKeyPressed)
-			{
-				if(runner.getBody().getWorldCenter().x > runnerInitialX)
-	        	{
-	        		if(runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x < runnerInitialX)
-	        			leftKeyPressed=false;
-	        		else
-	        			background.updateXBounds(.0150f);
-	        	}
-			}
-
-    	}else if (landKeyPressed && !rightKeyPressed) {
-
-        	runner.getBody().applyForce(Constants.WORLD_GRAVITY, runner.getBody().getWorldCenter(), true);
-        	camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
-
-//        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
-        	camera.update();
-
-
-		}else runner.stopMove();
-
-    }
-
-    private void createEnemy(Vector2 poppingPosition, Vector2 minPosition, Vector2 maxPosition) {
+    private void createEnemy(World world, Vector2 poppingPosition, Vector2 minPosition, Vector2 maxPosition) {
         EnemyType enemyType = RandomUtils.getRandomEnemyType();
         // On adapte la position Y de l'ennemi en fonction de son type
         poppingPosition.set(poppingPosition.x, enemyType.getY());
@@ -266,13 +156,13 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         enemies.add(enemy);
     }
 
-    private void createPlatform(float xMin, float xMax, float y) {
+    private void createPlatform(World world, float xMin, float xMax, float y) {
 //        PlatformType platformType = RandomUtils.getRandomPlatformType();
         Platform platform = new Platform(WorldUtils.createPlatform(world, xMin, xMax, y));
         addActor(platform);
     }
 
-    private void createCoin(float x, float y) {
+    private void createCoin(World world, float x, float y) {
         Coin coin = new Coin(WorldUtils.createCoin(world, x, y));
         addActor(coin);
         coins.add(coin);
@@ -282,7 +172,21 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
     @Override
     public void draw() {
         super.draw();
+        Array<Body> bodies = new Array<Body>(world.getBodyCount());
+        world.getBodies(bodies);
+
+        for (Body body : bodies) {
+            if(BodyUtils.bodyIsCoin(body)) {
+                CoinUserData userdata = (CoinUserData) body.getUserData();
+
+//                userdata.getSprite().setX(body.getWorldCenter().x * Constants.APP_WIDTH/20 + getCamera().viewportWidth/2);
+//                userdata.getSprite().setY(body.getWorldCenter().y * Constants.APP_HEIGHT/13);
+                userdata.getSprite().setPosition(body.getPosition().x, body.getPosition().y);
+            }
+        }
+
         renderer.render(world, camera.combined);
+
     }
     
     @Override
@@ -323,83 +227,6 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         }
     	return super.keyUp(keyCode);
     }
-    
-    @Override
-    public void beginContact(Contact contact) {
-
-        Body a = contact.getFixtureA().getBody();
-        Body b = contact.getFixtureB().getBody();
-
-        if (BodyUtils.bodyIsRunner(b) && BodyUtils.bodyIsEnemy(a)) {
-
-            EnemyUserData enemyUserData = (EnemyUserData) a.getUserData();
-            RunnerUserData runnerUserData = (RunnerUserData) b.getUserData();
-
-            if (b.getPosition().y >= a.getPosition().y + enemyUserData.getHeight()/2 + runnerUserData.getHeight()/2 -0.2f) {
-                bodiesToBeDelete.add(a);
-                runner.landed();
-            }
-            else {
-                runner.hit();
-            }
-
-        } else if (BodyUtils.bodyIsEnemy(b) && BodyUtils.bodyIsRunner(a)){
-            EnemyUserData enemyUserData = (EnemyUserData) b.getUserData();
-            RunnerUserData runnerUserData = (RunnerUserData) a.getUserData();
-
-            if (a.getPosition().y >= b.getPosition().y + enemyUserData.getHeight()/2 + runnerUserData.getHeight()/2 -0.2f) {
-                bodiesToBeDelete.add(b);
-                runner.landed();
-            }
-            else {
-                runner.hit();
-            }
-        } else if ((BodyUtils.bodyIsRunner(a) && (BodyUtils.bodyIsGround(b) || BodyUtils.bodyIsPlatform(b))) ||
-                ((BodyUtils.bodyIsGround(a) || BodyUtils.bodyIsPlatform(a)) && BodyUtils.bodyIsRunner(b))) {
-            runner.landed();
-            jumpKeyPressed=false;
-            landKeyPressed=false;
-
-            if ( (BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsPlatform(b) ) || (BodyUtils.bodyIsRunner(b) && BodyUtils.bodyIsPlatform(a) ) ) {
-            	landKeyPressed=true;
-            }
-        } else if (BodyUtils.bodyIsCoin(b) && BodyUtils.bodyIsRunner(a)) {
-            bodiesToBeDelete.add(b);
-            nbPieces++;
-        } else if (BodyUtils.bodyIsCoin(a) && BodyUtils.bodyIsRunner(b)) {
-            bodiesToBeDelete.add(a);
-            nbPieces++;
-        }
-
-    }
-
-    @Override
-    public void endContact(Contact contact) {
-
-    	Body a = contact.getFixtureA().getBody();
-        Body b = contact.getFixtureB().getBody();
-
-        if ((BodyUtils.bodyIsRunner(a) &&  BodyUtils.bodyIsPlatform(b)) || (BodyUtils.bodyIsPlatform(a) && BodyUtils.bodyIsRunner(b))) {
-    	//TODO : Change y
-//    	runner.getBody().applyLinearImpulse(new Vector2(0,-16f),new Vector2( runner.getBody().getWorldCenter().x+5,runner.getBody().getWorldCenter().y ), true );
-//        	runner.getBody().setTransform(runner.getBody().getWorldCenter().x+5, runner.getBody().getWorldCenter().y, 0);
-//        	runner.getBody().applyForce(Constants.WORLD_GRAVITY, runner.getBody().getWorldCenter(), true);
-//        	jumpKeyPressed=true;
-        	landKeyPressed=true;
-        	rightKeyPressed=false;
-    		leftKeyPressed=false;
-        }
-    }
-
-    @Override
-    public void preSolve(Contact contact, Manifold oldManifold) {
-
-    }
-
-    @Override
-    public void postSolve(Contact contact, ContactImpulse impulse) {
-
-    }
 
 	/**
 	 * @return the runner
@@ -408,37 +235,18 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 		return runner;
 	}
 
-	/**
-	 * @param runner the runner to set
-	 */
-	public void setRunner(Runner runner) {
-		this.runner = runner;
-	}
-
-	/**
-	 * @return the world
-	 */
-	public World getWorld() {
-		return world;
-	}
-
-    public ArrayList<Body> getBodiesToBeDelete() {
-        return bodiesToBeDelete;
-    }
-
-	/**
-	 * @param world the world to set
-	 */
-	public void setWorld(World world) {
-		this.world = world;
-	}
-
 	private void setUpBackground() {
 		background = new Background();
         addActor(background);
     }
 
-    public int getNbPieces() {
-        return nbPieces;
+    public ArrayList<Coin> getCoins() {
+        return coins;
     }
+
+    public ArrayList<Enemy> getEnemies() {
+        return enemies;
+    }
+
+
 }

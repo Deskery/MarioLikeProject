@@ -37,7 +37,8 @@ public class Constants {
 	public static final Vector2 RUNNER_MOVE_RIGHT_LINEAR_IMPULSE = new Vector2(4f, 0);
 	public static final Vector2 RUNNER_MOVE_LEFT_LINEAR_IMPULSE = new Vector2(-4f, 0);
 	public static final String BACKGROUND_IMAGE_PATH = "data/background.png";
-
+    public static final int SCORE_COIN = 20;
+    public static final int SCORE_ENEMY = 50;
 
 
 }
