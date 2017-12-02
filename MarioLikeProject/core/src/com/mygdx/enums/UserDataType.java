@@ -6,5 +6,6 @@ public enum UserDataType {
     ENEMY,
     HIT_BOX,
     COIN,
-    PLATFORM
+    PLATFORM,
+    FINISH_LINE
 }

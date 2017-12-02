@@ -39,6 +39,12 @@ public class Constants {
 	public static final String BACKGROUND_IMAGE_PATH = "data/background.png";
     public static final int SCORE_COIN = 20;
     public static final int SCORE_ENEMY = 50;
+	public static final float FINISH_LINE_X = 20f;
+	public static final float FINISH_LINE_Y = 0;
+	public static final float FINISH_LINE_HEIGHT = 3f;
+	public static final float FINISH_LINE_WIDTH = 4f;
+	public static final float FINISH_LINE_DENSITY = 0f;
+
 
 
 }

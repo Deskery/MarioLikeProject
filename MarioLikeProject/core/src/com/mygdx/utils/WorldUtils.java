@@ -60,7 +60,7 @@ public class WorldUtils {
 
     public static Body createPlatform(World world, float xMin, float xMax, float y) {
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.type = BodyDef.BodyType.KinematicBody;
 
         float width = xMax - xMin;
         float height = 0.5f;
@@ -101,6 +101,18 @@ public class WorldUtils {
         userData.setSprite(spriteCoin);
 
         body.setUserData(userData);
+        shape.dispose();
+        return body;
+    }
+
+    public static Body createFinishLine(World world) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(new Vector2(Constants.FINISH_LINE_X, Constants.FINISH_LINE_Y));
+        Body body = world.createBody(bodyDef);
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(Constants.FINISH_LINE_WIDTH, Constants.FINISH_LINE_HEIGHT);
+        body.createFixture(shape, Constants.FINISH_LINE_DENSITY);
+        body.setUserData(new FinishLineUserData());
         shape.dispose();
         return body;
     }

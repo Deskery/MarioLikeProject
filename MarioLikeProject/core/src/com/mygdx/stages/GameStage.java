@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -46,10 +47,15 @@ public class GameStage extends Stage implements InputProcessor {
     private boolean rightKeyPressed;
 	private boolean leftKeyPressed;
 	private boolean jumpKeyPressed;
-    private boolean landKeyPressed;
-	private Background background;
+//	private Background background;
 	private ArrayList<Body> bodiesToBeDelete = new ArrayList<Body>();
 	private float runnerInitialX;
+	private float cameraInitialX;
+	private boolean landKeyPressed;
+	private FinishLine finishLine;
+	private boolean gameFinish;
+
+
 
     public GameStage() {
 //    	setUpWorld();
@@ -59,7 +65,7 @@ public class GameStage extends Stage implements InputProcessor {
 
     private void setUpWorld() {
 //        world.setContactListener(this);
-        setUpBackground();
+//        setUpBackground();
     }
 
     public void createStage(World world) {
@@ -68,6 +74,11 @@ public class GameStage extends Stage implements InputProcessor {
         setUpEnemies(world);
         setUpPlatforms(world);
         setUpCoins(world);
+    }
+
+    private void setUpFinishLine() {
+        finishLine = new FinishLine(WorldUtils.createFinishLine(world));
+
     }
 
     private void setUpGround(World world) {
@@ -235,10 +246,6 @@ public class GameStage extends Stage implements InputProcessor {
 		return runner;
 	}
 
-	private void setUpBackground() {
-		background = new Background();
-        addActor(background);
-    }
 
     public ArrayList<Coin> getCoins() {
         return coins;
@@ -248,5 +255,18 @@ public class GameStage extends Stage implements InputProcessor {
         return enemies;
     }
 
+    /**
+     * @return the gameFinish
+     */
+    public boolean isGameFinish() {
+        return gameFinish;
+    }
+
+    /**
+     * @param gameFinish the gameFinish to set
+     */
+    public void setGameFinish(boolean gameFinish) {
+        this.gameFinish = gameFinish;
+    }
 
 }
