@@ -35,7 +35,7 @@ public class WorldUtils {
         MassData massData = new MassData();
         massData.mass = 50;
         body.setMassData(massData);
-        body.setUserData(new RunnerUserData(Constants.RUNNER_WIDTH, Constants.RUNNER_HEIGHT));
+        body.setUserData(new RunnerUserData());
         shape.dispose();
         return body;
     }

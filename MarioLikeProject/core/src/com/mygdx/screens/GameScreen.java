@@ -17,7 +17,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -63,11 +62,10 @@ import com.sun.glass.ui.View;
 public class GameScreen implements Screen, ContactListener {
 
     private BitmapFont font = new BitmapFont();
-    private SpriteBatch batch = new SpriteBatch();
+//    private SpriteBatch batch = new SpriteBatch();
     private GameStage stage;
-    private OrthographicCamera camera;
+//    private Orthographicgamecam gamecam;
     private Box2DDebugRenderer debugRenderer;
-    private World world;
     private int score = 0;
     private int nbCoins = 0;
 
@@ -81,6 +79,7 @@ public class GameScreen implements Screen, ContactListener {
 	float origin = 0;
 	private boolean jump = false;
 	private MyGdxGame game;
+//    private boolean gameFinish = false;
 
     private TextureAtlas atlas;
     public static boolean alreadyDestroyed = false;
@@ -92,7 +91,7 @@ public class GameScreen implements Screen, ContactListener {
     //Tiled map variables
     private TmxMapLoader maploader;
     private TiledMap map;
-//    private OrthogonalTiledMapRenderer renderer;
+    private OrthogonalTiledMapRenderer renderer;
 
     //Box2d variables
     private World world;
@@ -109,11 +108,16 @@ public class GameScreen implements Screen, ContactListener {
 
     public GameScreen(MyGdxGame myGdxGame) {
         stage = new GameStage();
+        world = new World(new Vector2(0, -9.81f), true);
+        world.setContactListener(this);
+        debugRenderer = new Box2DDebugRenderer();
+        stage.createStage(world);
+        player = stage.getRunner();
+
         game = myGdxGame;
 
 //        atlas = new TextureAtlas("Mario_and_Enemies.pack");
-
-        this.game = myGdxGame;
+        
         //create cam used to follow mario through cam world
         gamecam = new OrthographicCamera();
 
@@ -123,56 +127,12 @@ public class GameScreen implements Screen, ContactListener {
       //Load our map and setup our map renderer
         maploader = new TmxMapLoader();
         map = maploader.load("data/level1.tmx");
-//        renderer = new OrthogonalTiledMapRenderer(map, 1  / 100);
+        renderer = new OrthogonalTiledMapRenderer(map, 1  / 100);
 
 
         //initially set our gamcam to be centered correctly at the start of of map
         gamecam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
-        //create our Box2D world, setting no gravity in X, -10 gravity in Y, and allow bodies to sleep
-        world = new World(new Vector2(0, -10), true);
-        //allows for debug lines of our box2d world.
-//        b2dr = new Box2DDebugRenderer();
-
-//        creator = new B2WorldCreator(this);
-
-        //create mario in our game world
-
-        player = new Runner(this, WorldUtils.createRunner(world));
-        player.setSize(Constants.RUNNER_WIDTH/2, Constants.RUNNER_HEIGHT/2);
-        player.setOrigin(player.getWidth()/2, player.getHeight()/2);
-        player.getBody().setUserData(player);
-
-        world.setContactListener(new ContactListener() {
-
-			@Override
-			public void preSolve(Contact contact, Manifold oldManifold) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void postSolve(Contact contact, ContactImpulse impulse) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void endContact(Contact contact) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void beginContact(Contact contact) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-
-
-        Gdx.input.setInputProcessor(stage);
-           
     }
 
     @Override
@@ -182,48 +142,17 @@ public class GameScreen implements Screen, ContactListener {
         //Clear the screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);    
 
-        debugRenderer.render(world, camera.combined);
+        debugRenderer.render(world, gamecam.combined);
 
-        camera.position.set(stage.getRunner().getBody().getPosition().x, camera.viewportHeight / 2, camera.position.z);
-        camera.update();
+        gamecam.position.set(stage.getRunner().getBody().getPosition().x, gamecam.viewportHeight / 2, gamecam.position.z);
+        gamecam.update();
 
-//        renderer.render();
-        player.update(delta);
+        renderer.render();
+//        player.update(delta);
         //renderer our Box2DDebugLines
 //        b2dr.render(world, gamecam.combined);
 
         game.batch.setProjectionMatrix(gamecam.combined);
-        game.batch.begin();
-//        player.draw(game.batch);
-        world.getBodies(bodies);
-        for(Body body:bodies)
-        	if(body.getUserData() != null && body.getUserData() instanceof Sprite)
-        	{
-        		Sprite sprite = (Sprite) body.getUserData();
-//        		player.update(delta);
-                ((Runner) sprite).update(delta);
-
-        		sprite.setPosition(body.getPosition().x-sprite.getWidth()/2, body.getPosition().y-sprite.getHeight()/2);
-//        		sprite.setRotation(0);
-//        		sprite.draw(game.batch);
-//        		game.batch.draw(sprite.getTexture(), ((Runner) sprite).getBound().getX(), ((Runner) sprite).getBound().getY());
-
-        	}
-
-        game.batch.end();
-
-        //Set our batch to now draw what the Hud camera sees.
-        game.batch.setProjectionMatrix(stage.getCamera().combined);
-        //Update the stage
-        stage.draw();
-
-        stage.act(delta);
-
-        if(gameOver()){
-            game.setScreen(new GameOverScreen(game));
-            dispose();
-        }
-
 
         destroyBodiesToBeDeleted();
 
@@ -236,29 +165,16 @@ public class GameScreen implements Screen, ContactListener {
 
         world.step(1/60f, 8, 5);
 
-        batch.begin();
-        font.draw(batch, "Coins : " + nbCoins, Constants.APP_WIDTH - 80, Constants.APP_HEIGHT - 20);
-        font.draw(batch, "Score : " + score, Constants.APP_WIDTH - 200, Constants.APP_HEIGHT - 20);
 
-        for (Body body : bodies) {
-            if(BodyUtils.bodyIsCoin(body)) {
-                CoinUserData userdata = (CoinUserData) body.getUserData();
+        game.batch.begin();
+        font.draw(game.batch, "Coins : " + nbCoins, Constants.APP_WIDTH - 80, Constants.APP_HEIGHT - 20);
+        font.draw(game.batch, "Score : " + score, Constants.APP_WIDTH - 200, Constants.APP_HEIGHT - 20);
+        game.batch.end();
 
-                Sprite Sprite = (Sprite) userdata.getSprite();
-                Sprite.setPosition(body.getPosition().x - Sprite.getWidth() / 2, body.getPosition().y - Sprite.getHeight() / 2);
-                Sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
-                Sprite.draw(batch);
-
-//                Table t = new Table();
-//
-//                userdata.getSprite().setX(body.getWorldCenter().x * Constants.APP_WIDTH/20 + stage.getCamera().viewportWidth/2);
-//                userdata.getSprite().setY(body.getWorldCenter().y * Constants.APP_HEIGHT/13);
-//                userdata.getSprite().draw(batch);
-            }
+        if(gameOver()){
+            Gdx.input.setInputProcessor(new InputController());
+            game.setScreen(new GameOverScreen(game, score));
         }
-
-        batch.end();
-
     }
 
     private void destroyBodiesToBeDeleted(){
@@ -293,6 +209,20 @@ public class GameScreen implements Screen, ContactListener {
         Runner runner = stage.getRunner();
         Body runnerBody = runner.getBody();
 
+        if (BodyUtils.bodyIsEnemy(body)) {
+            EnemyUserData eud = (EnemyUserData) body.getUserData();
+
+            if (body.getPosition().x < eud.getBeginPosition().x) {
+                eud.setLinearVelocity(Constants.ENEMY_LINEAR_VELOCITY_RIGHT);
+            }
+
+            if (body.getPosition().x > eud.getEndPosition().x) {
+                eud.setLinearVelocity(Constants.ENEMY_LINEAR_VELOCITY_LEFT);
+            }
+
+            body.setLinearVelocity(eud.getLinearVelocity());
+        }
+
         if (!BodyUtils.bodyInBounds(body)) {
             if (BodyUtils.bodyIsEnemy(body) && !runner.isHit()) {
 
@@ -315,13 +245,7 @@ public class GameScreen implements Screen, ContactListener {
         else if(jumpKeyPressed)
         {
             runner.jump();
-//            if(rightKeyPressed) {
-//                background.updateXBounds(-.0150f);
-//            }
 //
-//            if(leftKeyPressed) {
-//                background.updateXBounds(.0150f);
-//            }
 
         }else if (landKeyPressed && !rightKeyPressed) {
 
@@ -354,20 +278,7 @@ public class GameScreen implements Screen, ContactListener {
         //takes 1 step in the physics simulation(60 times per second)
         world.step(1 / 60f, 6, 2);
 
-//        player.act(dt);
-//        for(Enemy enemy : creator.getEnemies()) {
-//            enemy.update(dt);
-//            if(enemy.getX() < player.getX() + 224 / MarioBros.PPM) {
-//                enemy.b2body.setActive(true);
-//            }
-//        }
-
-//        for(Item item : items)
-//            item.update(dt);
-//
-        stage.act(dt);
-
-        player.update(dt);
+//        player.update(dt);
 
         //attach our gamecam to our players.x coordinate
 //        if(player.currentState != Mario.State.DEAD) {
@@ -376,30 +287,21 @@ public class GameScreen implements Screen, ContactListener {
 
         //update our gamecam with correct coordinates after changes
         gamecam.update();
-        //tell our renderer to draw only what our camera can see in our game world.
-//        renderer.setView(gamecam);
+        //tell our renderer to draw only what our gamecam can see in our game world.
+        renderer.setView(gamecam);
 
     }
 
 
 
 	public boolean gameOver(){
-	    if(stage.isGameFinish()){
-	        return true;
-	    }
-	    return false;
-	}
+        return stage.isGameFinish();
+    }
 
 
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-        world = new World(new Vector2(0, -9.81f), true);
-        world.setContactListener(this);
-        debugRenderer = new Box2DDebugRenderer();
-        stage.createStage(world);
-
-        camera = new OrthographicCamera();
 
         Gdx.input.setInputProcessor(new InputController() {
 
@@ -461,44 +363,17 @@ public class GameScreen implements Screen, ContactListener {
             }
 
         });
-
-//		 Actor player = new Actor();
-//		 player.setPosition(600, 600);
-//		 stage.setKeyboardFocus(player);
-//		 player.addListener(new InputListener(){
-//		   @Override
-//		   public boolean keyDown(InputEvent event, int keyCode) {
-////			   if(event.getKeyCode() == Keys.SPACE || keyCode == Keys.UP)
-////			    	{
-//			    		stage.getRunner().jump();
-////			    	}
-//		    return true;
-//		   }
-//
-//		   @Override
-//			public boolean keyUp(InputEvent event, int keycode) {
-//				// TODO Auto-generated method stub
-//
-////			   stage.getRunner().landed();
-//				return super.keyUp(event, keycode);
-//			}
-//
-//
-//		 });
-//		 stage.addActor(player);
-
-//		 Gdx.input.setInputProcessor(stage);
 	}
 		
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-        gamePort.update(width,height);
+//        gamePort.update(width,height);
 
 
-//		camera.viewportWidth = width /25;
-//		camera.viewportHeight = height /25;
-//		camera.update();
+		gamecam.viewportWidth = width /25;
+		gamecam.viewportHeight = height /25;
+		gamecam.update();
 	}
 
 	 public TiledMap getMap(){
@@ -540,8 +415,8 @@ public class GameScreen implements Screen, ContactListener {
 
         world.dispose();
         debugRenderer.dispose();
-        batch.dispose();
-		map.dispose();
+//        game.batch.dispose();
+//		map.dispose();
 	}
 
 	/**
@@ -561,7 +436,6 @@ public class GameScreen implements Screen, ContactListener {
 
     @Override
     public void beginContact(Contact contact) {
-        System.out.println("heeeeeeeeeeeeeeeeeeeeeeeeeeeeey");
         Body a = contact.getFixtureA().getBody();
         Body b = contact.getFixtureB().getBody();
 
@@ -576,6 +450,7 @@ public class GameScreen implements Screen, ContactListener {
                 stage.getRunner().jump();
             }
             else {
+                stage.setGameFinish(true);
                 stage.getRunner().hit();
             }
 
@@ -589,6 +464,7 @@ public class GameScreen implements Screen, ContactListener {
                 score += Constants.SCORE_ENEMY;
             }
             else {
+                stage.setGameFinish(true);
                 stage.getRunner().hit();
             }
         } else if ((BodyUtils.bodyIsRunner(a) && (BodyUtils.bodyIsGround(b) || BodyUtils.bodyIsPlatform(b))) ||
@@ -596,6 +472,12 @@ public class GameScreen implements Screen, ContactListener {
             stage.getRunner().landed();
             jumpKeyPressed=false;
             landKeyPressed=false;
+
+            if(rightKeyPressed)
+                stage.getRunner().moveRight();
+
+            if(leftKeyPressed)
+                stage.getRunner().moveLeft();
 
             if ( (BodyUtils.bodyIsRunner(a) && BodyUtils.bodyIsPlatform(b) ) || (BodyUtils.bodyIsRunner(b) && BodyUtils.bodyIsPlatform(a) ) ) {
                 landKeyPressed=true;
@@ -608,6 +490,11 @@ public class GameScreen implements Screen, ContactListener {
             bodiesToBeDelete.add(a);
             nbCoins++;
             score += Constants.SCORE_COIN;
+        } else if ((BodyUtils.bodyIsFinishLine(a)) && (BodyUtils.bodyIsRunner(b)) ||
+                (BodyUtils.bodyIsFinishLine(b)) && (BodyUtils.bodyIsRunner(a))) {
+
+            stage.setGameFinish(true);
+
         }
     }
 

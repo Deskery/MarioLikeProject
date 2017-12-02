@@ -22,7 +22,7 @@ public class GameOverScreen implements Screen {
 	private Game game;
 	
 	
-	public GameOverScreen(Game game) {
+	public GameOverScreen(Game game, int score) {
 		// TODO Auto-generated constructor stub
 		this.game=game;
 		viewPort = new FitViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT, new OrthographicCamera());
@@ -35,7 +35,7 @@ public class GameOverScreen implements Screen {
         table.setFillParent(true);
 
         Label gameOverLabel = new Label("GAME OVER", font);
-        Label playAgainLabel = new Label("Click to Play Again", font);
+        Label playAgainLabel = new Label("Score : " + score, font);
 
         table.add(gameOverLabel).expandX();
         table.row();
@@ -53,15 +53,10 @@ public class GameOverScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
-		if(Gdx.input.justTouched()) {
-//            game.setScreen(new GameScreen());
-            game.create();
-            dispose();
-        }
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.draw();
-		
+
 	}
 
 	@Override
@@ -91,7 +86,7 @@ public class GameOverScreen implements Screen {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		stage.dispose();
+//		stage.dispose();
 	}
 
 }

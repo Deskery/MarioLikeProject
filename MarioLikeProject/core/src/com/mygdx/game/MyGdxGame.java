@@ -34,7 +34,7 @@ public class MyGdxGame extends Game  {
 		
 		manager = new AssetManager();
 		manager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-//		manager.load("data/level1.tmx", TiledMap.class);
+		manager.load("data/level1.tmx", TiledMap.class);
 		manager.load("data/background.png", Texture.class);
 //		manager.load("level1.tsx", TiledMapTileSet.class);
 		manager.finishLoading();

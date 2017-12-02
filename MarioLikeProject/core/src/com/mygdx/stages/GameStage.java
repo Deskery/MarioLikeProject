@@ -63,20 +63,16 @@ public class GameStage extends Stage implements InputProcessor {
 //        renderer = new Box2DDebugRenderer();
     }
 
-    private void setUpWorld() {
-//        world.setContactListener(this);
-//        setUpBackground();
-    }
-
     public void createStage(World world) {
         setUpRunner(world);
         setUpGround(world);
         setUpEnemies(world);
         setUpPlatforms(world);
         setUpCoins(world);
+        setUpFinishLine(world);
     }
 
-    private void setUpFinishLine() {
+    private void setUpFinishLine(World world) {
         finishLine = new FinishLine(WorldUtils.createFinishLine(world));
 
     }
@@ -99,58 +95,68 @@ public class GameStage extends Stage implements InputProcessor {
 
     private void setUpPlatforms(World world) {
         createPlatform(world, 5, 8, 4);
+        createPlatform(world, 15, 18, 4);
+        createPlatform(world, 19, 22, 6);
+        createPlatform(world, 27, 30, 6);
+        createPlatform(world, 29, 32, 3);
     }
 
     private void setUpCoins(World world) {
         createCoin(world, 6, 5);
         createCoin(world, 7.5f, 5);
+        createCoin(world, 19, 7);
+        createCoin(world, 21, 7);
+        createCoin(world, 27.5f, 7);
+        createCoin(world, 27.5f, 8.5f);
+        createCoin(world, 29.5f, 7);
+        createCoin(world, 29.5f, 8.5f);
     }
 
     @Override
     public void act(float delta) {
 
-        for (Body b : bodiesToBeDelete) {
-            for (Enemy enemy : enemies) {
-                if (enemy.getUserData().equals(b.getUserData())) {
-                    enemy.remove();
-                }
-            }
-
-            for(Coin coin : coins) {
-                if (coin.getUserData().equals(b.getUserData())) {
-                    coin.remove();
-                }
-            }
-
-            final Array<JointEdge> list = b.getJointList();
-
-            while (list.size > 0) {
-                world.destroyJoint(list.get(0).joint);
-            }
-            world.destroyBody(b);
-            b.setUserData(null);
-            b = null;
-
-
-        }
-        bodiesToBeDelete.clear();
-
-        super.act(delta);
-
-        Array<Body> bodies = new Array<Body>(world.getBodyCount());
-        world.getBodies(bodies);
-
-        for (Body body : bodies) {
-//            update(body);
-        }
-
-        // Fixed timestep
-        accumulator += delta;
-
-        while (accumulator >= delta) {
-            world.step(TIME_STEP, 6, 2);
-            accumulator -= TIME_STEP;
-        }
+//        for (Body b : bodiesToBeDelete) {
+//            for (Enemy enemy : enemies) {
+//                if (enemy.getUserData().equals(b.getUserData())) {
+//                    enemy.remove();
+//                }
+//            }
+//
+//            for(Coin coin : coins) {
+//                if (coin.getUserData().equals(b.getUserData())) {
+//                    coin.remove();
+//                }
+//            }
+//
+//            final Array<JointEdge> list = b.getJointList();
+//
+//            while (list.size > 0) {
+//                world.destroyJoint(list.get(0).joint);
+//            }
+//            world.destroyBody(b);
+//            b.setUserData(null);
+//            b = null;
+//
+//
+//        }
+//        bodiesToBeDelete.clear();
+//
+//        super.act(delta);
+//
+//        Array<Body> bodies = new Array<Body>(world.getBodyCount());
+//        world.getBodies(bodies);
+//
+//        for (Body body : bodies) {
+////            update(body);
+//        }
+//
+//        // Fixed timestep
+//        accumulator += delta;
+//
+//        while (accumulator >= delta) {
+//            world.step(TIME_STEP, 6, 2);
+//            accumulator -= TIME_STEP;
+//        }
 
     }
 
@@ -183,20 +189,20 @@ public class GameStage extends Stage implements InputProcessor {
     @Override
     public void draw() {
         super.draw();
-        Array<Body> bodies = new Array<Body>(world.getBodyCount());
-        world.getBodies(bodies);
-
-        for (Body body : bodies) {
-            if(BodyUtils.bodyIsCoin(body)) {
-                CoinUserData userdata = (CoinUserData) body.getUserData();
-
-//                userdata.getSprite().setX(body.getWorldCenter().x * Constants.APP_WIDTH/20 + getCamera().viewportWidth/2);
-//                userdata.getSprite().setY(body.getWorldCenter().y * Constants.APP_HEIGHT/13);
-                userdata.getSprite().setPosition(body.getPosition().x, body.getPosition().y);
-            }
-        }
-
-        renderer.render(world, camera.combined);
+//        Array<Body> bodies = new Array<Body>(world.getBodyCount());
+//        world.getBodies(bodies);
+//
+//        for (Body body : bodies) {
+//            if(BodyUtils.bodyIsCoin(body)) {
+//                CoinUserData userdata = (CoinUserData) body.getUserData();
+//
+////                userdata.getSprite().setX(body.getWorldCenter().x * Constants.APP_WIDTH/20 + getCamera().viewportWidth/2);
+////                userdata.getSprite().setY(body.getWorldCenter().y * Constants.APP_HEIGHT/13);
+//                userdata.getSprite().setPosition(body.getPosition().x, body.getPosition().y);
+//            }
+//        }
+//
+//        renderer.render(world, camera.combined);
 
     }
     

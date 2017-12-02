@@ -8,11 +8,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.mygdx.box2d.EnemyUserData;
 import com.mygdx.box2d.RunnerUserData;
 import com.mygdx.screens.GameScreen;
 import com.mygdx.utils.Constants;
 
-public class Runner extends Sprite {
+public class Runner extends GameActor {
 
 	private boolean jumping;
 	private boolean dodging;
@@ -20,24 +21,24 @@ public class Runner extends Sprite {
 	private boolean moving;
 	private Body body;
 	private GameScreen gameScreen;
-	private Rectangle bound;
+//	private Rectangle bound;
 //    private TextureRegion texture;
-    private float weight = 10000;
-private TextureRegion marioStand;
+//    private float weight = 10000;
+//private TextureRegion marioStand;
 //private Texture texture;
 
 
     public Runner(Body body) {
-        super();
+        super(body);
     	this.body=body;
     }
     
-    public void update(float delta){
-        getBound().y -= delta/weight;
-//    	setRegion(getFrame(delta));
-//        this.setPosition(this.bound.getX(), this.bound.getY());
-//    	setTexture(texture);
-    }
+//    public void update(float delta){
+//        getBound().y -= delta/weight;
+////    	setRegion(getFrame(delta));
+////        this.setPosition(this.bound.getX(), this.bound.getY());
+////    	setTexture(texture);
+//    }
     
 //    public Texture getFrame(float dt){
 //        
@@ -76,36 +77,36 @@ private TextureRegion marioStand;
 
     public Runner(GameScreen gameScreen,Body body) {
 		// TODO Auto-generated constructor stub
-    	super();
+    	super(body);
     	this.body=body;
     	this.gameScreen = gameScreen;
 //    	texture = new Texture(Gdx.files.internal("data/background.png"));
 //    	this.setTexture(texture);
-    	this.setPosition(body.getWorldCenter().x+Constants.RUNNER_WIDTH/2, body.getWorldCenter().y+Constants.RUNNER_HEIGHT);
-    	this.setSize(Constants.RUNNER_WIDTH/2, Constants.RUNNER_HEIGHT/2);
-    	setBound(new Rectangle(this.body.getPosition().x-Constants.RUNNER_WIDTH/2, this.body.getPosition().y-Constants.RUNNER_HEIGHT,Constants.RUNNER_WIDTH, Constants.RUNNER_HEIGHT));
-        this.setPosition(this.getBound().getX(), this.getBound().getY());
-    	this.setSize(Constants.RUNNER_WIDTH/2, Constants.RUNNER_HEIGHT/2);
+//    	this.setPosition(body.getWorldCenter().x+Constants.RUNNER_WIDTH/2, body.getWorldCenter().y+Constants.RUNNER_HEIGHT);
+//    	this.setSize(Constants.RUNNER_WIDTH/2, Constants.RUNNER_HEIGHT/2);
+//    	setBound(new Rectangle(this.body.getPosition().x-Constants.RUNNER_WIDTH/2, this.body.getPosition().y-Constants.RUNNER_HEIGHT,Constants.RUNNER_WIDTH, Constants.RUNNER_HEIGHT));
+//        this.setPosition(this.getBound().getX(), this.getBound().getY());
+//    	this.setSize(Constants.RUNNER_WIDTH/2, Constants.RUNNER_HEIGHT/2);
 
 	}
 
 	public RunnerUserData getUserData() {
-        return null;
+        return (RunnerUserData) userData;
     }
 
-	@Override
-	public void draw(Batch batch) {
-		// TODO Auto-generated method stub
-		super.draw(batch);
-//        batch.draw(this.getTexture(), this.bound.getX(), this.bound.getY());
-
-	}
+//	@Override
+//	public void draw(Batch batch) {
+//		// TODO Auto-generated method stub
+//		super.draw(batch);
+////        batch.draw(this.getTexture(), this.bound.getX(), this.bound.getY());
+//
+//	}
     public void jump() {
 
     	if (!(jumping || dodging|| hit)) {
 //            body.applyLinearImpulse(13f, 13f, body.getPosition().x, body.getPosition().y, true);
 //    		body.applyLinearImpulse(0, 1.0f, body.getPosition().x, body.getPosition().y, true);
-    		 body.applyLinearImpulse(new Vector2(0,50*30f), body.getWorldCenter(), true);
+    		 body.applyLinearImpulse(new Vector2(0,800f), body.getWorldCenter(), true);
 //    		 this.update(50*30f);
 //    		 body.setGravityScale(5f);
              jumping = true;
@@ -206,11 +207,11 @@ private TextureRegion marioStand;
 		this.body = body;
 	}
 
-	public Rectangle getBound() {
-		return bound;
-	}
-
-	public void setBound(Rectangle bound) {
-		this.bound = bound;
-	}
+//	public Rectangle getBound() {
+//		return bound;
+//	}
+//
+//	public void setBound(Rectangle bound) {
+//		this.bound = bound;
+//	}
 }
