@@ -12,6 +12,5 @@
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx:1.9.6" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-box2d:1.9.6" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-bullet:1.9.6" level="project" />
-    <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-backend-lwjgl:1.9.6" level="project" />
   </component>
 </module>
