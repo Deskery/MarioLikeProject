@@ -5,7 +5,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.mygdx.enums.UserDataType;
 import com.mygdx.utils.Constants;
 
-public class EnemyUserData extends UserData {
+public class EnemyUserData extends UserData  {
 
     private Vector2 linearVelocity;
     private Vector2 beginPosition;

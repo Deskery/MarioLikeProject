@@ -12,10 +12,6 @@ import com.mygdx.actors.*;
 import com.mygdx.box2d.EnemyUserData;
 import com.mygdx.box2d.RunnerUserData;
 import com.mygdx.enums.EnemyType;
-import com.mygdx.actors.Background;
-import com.mygdx.actors.Enemy;
-import com.mygdx.actors.Ground;
-import com.mygdx.actors.Runner;
 import com.mygdx.utils.BodyUtils;
 import com.mygdx.utils.Constants;
 import com.mygdx.utils.RandomUtils;
@@ -47,10 +43,15 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 	private float runnerInitialX;
 	private float cameraInitialX;
 	private boolean landKeyPressed;
+	private FinishLine finishLine;
+	private boolean gameFinish;
+	
+	
 
     public GameStage() {
     	setUpWorld();
         setupCamera();
+        
         renderer = new Box2DDebugRenderer();
     }
 
@@ -61,11 +62,17 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
         setUpGround();
         setUpEnemies();
         setUpPlatforms();
+//        setUpFinishLine();
         setUpRunner();
 
     }
 
-    private void setUpGround() {
+    private void setUpFinishLine() {
+		finishLine = new FinishLine(WorldUtils.createFinishLine(world));
+		
+	}
+
+	private void setUpGround() {
         ground = new Ground(WorldUtils.createGround(world));
         addActor(ground);
     }
@@ -159,30 +166,38 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 //        	System.err.println(runnerInitialX +":"+ runner.getBody().getWorldCenter().x);
 //        	System.err.println("pppppp"+runnerInitialX +":"+ (runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x));
 
-        	if(runner.getBody().getWorldCenter().x > runnerInitialX)
+//        	if(runner.getBody().getWorldCenter().x > runnerInitialX)
+//        	{
+//        		if(runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x < runnerInitialX)
+////        			if(runner.getBody().getWorldCenter().x-(runner.getBody().getWorldCenter().x-runnerInitialX) > 0){
+////        				runner.moveLeft(new Vector2(-(runner.getBody().getWorldCenter().x-runnerInitialX), 0));
+////        				if(camera.position.x > cameraInitialX){
+////        					camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
+////
+////        					camera.update();
+////        					background.updateXBounds(.01f);
+////        				}
+////        				
+////
+//////			        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
+////
+////        			}
+////        			else {
+////    					runner.moveLeft();
+//////    					camera.translate(-.022f, 0);
+////    					camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
+////    					camera.update();
+////    					background.updateXBounds(.01f);
+////    				}
+//        			leftKeyPressed=false;
+        	if(runner.getBody().getWorldCenter().x == 2f)
         	{
-        		if(runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x < runnerInitialX)
-//        			if(runner.getBody().getWorldCenter().x-(runner.getBody().getWorldCenter().x-runnerInitialX) > 0){
-//        				runner.moveLeft(new Vector2(-(runner.getBody().getWorldCenter().x-runnerInitialX), 0));
-//        				if(camera.position.x > cameraInitialX){
-//        					camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
-//
-//        					camera.update();
-//        					background.updateXBounds(.01f);
-//        				}
-//        				
-//
-////			        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
-//
-//        			}
-//        			else {
-//    					runner.moveLeft();
-////    					camera.translate(-.022f, 0);
-//    					camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
-//    					camera.update();
-//    					background.updateXBounds(.01f);
-//    				}
-        			leftKeyPressed=false;
+        		leftKeyPressed= false;
+        	}
+        	else if(runner.getBody().getWorldCenter().x + Constants.RUNNER_MOVE_LEFT_LINEAR_IMPULSE.x < 2f && runner.getBody().getWorldCenter().x-(runner.getBody().getWorldCenter().x-runnerInitialX) > 0)
+        	{
+        		runner.moveLeft(new Vector2(-(runner.getBody().getWorldCenter().x-runnerInitialX), 0));
+        	}
 
         		else{
 	        	runner.moveLeft();
@@ -192,18 +207,19 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 //	        	camera.lookAt(runner.getBody().getPosition().x, 0, camera.position.z);
 	        	camera.update();
 	        	background.updateXBounds(.01f);
+	        	
         		}
-        	}
-        	else
-        	{
-//        		runner.setPosition(runnerInitialX, runner.getBody().getWorldCenter().y);
-////        		camera.translate(0f, 0);
-//				camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
-//
-////        		camera.lookAt(runnerInitialX, 0, camera.position.z);
-//        		camera.update();
-//	        	background.updateXBounds(0f);
-        	}
+        	
+//        	else
+//        	{
+////        		runner.setPosition(runnerInitialX, runner.getBody().getWorldCenter().y);
+//////        		camera.translate(0f, 0);
+////				camera.position.set(runner.getBody().getWorldCenter().x,camera.viewportHeight / 2, camera.position.z);
+////
+//////        		camera.lookAt(runnerInitialX, 0, camera.position.z);
+////        		camera.update();
+////	        	background.updateXBounds(0f);
+//        	}
         }
         else if(jumpKeyPressed)
     	{
@@ -344,6 +360,11 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
             	landKeyPressed=true;
             }
         }
+        else if ((BodyUtils.bodyIsFinishLine(a)) && (BodyUtils.bodyIsRunner(b)) || 
+        		(BodyUtils.bodyIsFinishLine(b)) && (BodyUtils.bodyIsRunner(a))) {
+			
+        	gameFinish = true;
+		}
 
     }
 
@@ -411,4 +432,18 @@ public class GameStage extends Stage implements ContactListener, InputProcessor 
 		background = new Background();
         addActor(background);
     }
+
+	/**
+	 * @return the gameFinish
+	 */
+	public boolean isGameFinish() {
+		return gameFinish;
+	}
+
+	/**
+	 * @param gameFinish the gameFinish to set
+	 */
+	public void setGameFinish(boolean gameFinish) {
+		this.gameFinish = gameFinish;
+	}
 }

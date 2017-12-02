@@ -33,9 +33,14 @@ public class Constants {
     public static final Vector2 ENEMY_LINEAR_VELOCITY_UP = new Vector2(0, 2f);
     public static final Vector2 ENEMY_LINEAR_VELOCITY_DOWN = new Vector2(0, -2f);
     public static final float RUNNER_HIT_ANGULAR_IMPULSE = 10f;
-	public static final Vector2 RUNNER_MOVE_RIGHT_LINEAR_IMPULSE = new Vector2(4f, 0);
-	public static final Vector2 RUNNER_MOVE_LEFT_LINEAR_IMPULSE = new Vector2(-4f, 0);
+	public static final Vector2 RUNNER_MOVE_RIGHT_LINEAR_IMPULSE = new Vector2(9f, 0);
+	public static final Vector2 RUNNER_MOVE_LEFT_LINEAR_IMPULSE = new Vector2(-9f, 0);
 	public static final String BACKGROUND_IMAGE_PATH = "data/background.png";
+	public static final float FINISH_LINE_X = 20f;
+	public static final float FINISH_LINE_Y = 0;
+	public static final float FINISH_LINE_HEIGHT = 3f;
+	public static final float FINISH_LINE_WIDTH = 4f;
+	public static final float FINISH_LINE_DENSITY = 0f;
 
 
 

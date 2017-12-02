@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.mygdx.game.MyGdxGame;
 import com.mygdx.stages.GameStage;
 import com.mygdx.utils.BodyUtils;
 
@@ -24,9 +25,11 @@ public class GameScreen implements Screen  {
 	private GameStage stage;
 	float origin = 0;
 	private boolean jump = false;
+	private MyGdxGame game;
 
-    public GameScreen() {
+    public GameScreen(MyGdxGame myGdxGame) {
         stage = new GameStage();
+        game = myGdxGame;
         
         
 //        Gdx.input.setInputProcessor(stage);        
@@ -42,8 +45,24 @@ public class GameScreen implements Screen  {
         stage.draw();
         
         stage.act(delta);
+        
+        if(gameOver()){
+            game.setScreen(new GameOverScreen(game));
+            dispose();
+        }
+
 
     }
+    
+    
+
+	public boolean gameOver(){
+	    if(stage.isGameFinish()){
+	        return true;
+	    }
+	    return false;
+	}
+
     
 	@Override
 	public void show() {
