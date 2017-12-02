@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <option name="BUILD_PROCESS_HEAP_SIZE" value="1000" />
+    <bytecodeTargetLevel>
+      <module name="core_main" target="1.6" />
+      <module name="core_test" target="1.6" />
+      <module name="desktop_main" target="1.6" />
+      <module name="desktop_test" target="1.6" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
